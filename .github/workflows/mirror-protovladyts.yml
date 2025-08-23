@@ -14,16 +14,17 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Set git identity
+      - name: Configure git identity
         run: |
           git config user.name "mirror-bot"
           git config user.email "mirror-bot@users.noreply.github.com"
 
-      - name: Add target remote
+      - name: Add target remote (authenticated)
         env:
-          TOKEN: ${{ secrets.TARGET_REPO_TOKEN_PROTOVLADYTS }}
+          USERNAME: ${{ secrets.TARGET_USER_PROTOVLADYTS }}
+          TOKEN: ${{ secrets.TARGET_TOKEN_PROTOVLADYTS }}
         run: |
-          git remote add target https://$TOKEN@github.com/protovladyts/silalunahablara.git
+          git remote add target https://${USERNAME}:${TOKEN}@github.com/protovladyts/silalunahablara.git
           git fetch origin --tags
 
       - name: Push main and tags (force mirror)
