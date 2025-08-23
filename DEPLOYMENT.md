@@ -83,3 +83,15 @@ Asegúrate de configurar estas variables en el dashboard de Vercel:
 ### Si hay errores de conexión a BD:
 - Usa el connection string directo de NeonDB (no el pooled)
 - Asegúrate de que incluya `?sslmode=require` al final
+
+### Error 500 en /api/otp/request:
+1. **Verificar health check**: Visita `/api/health` para diagnosticar la conexión a la BD
+2. **Revisar logs**: Los logs ahora incluyen más detalles sobre el error
+3. **Verificar variables de entorno**: Asegúrate de que `DATABASE_URL` esté configurada correctamente
+4. **Connection string**: Debe ser el directo de NeonDB, no el pooled
+
+### Pasos de diagnóstico:
+1. Visita `https://tu-app.vercel.app/api/health`
+2. Si falla, revisa la variable `DATABASE_URL` en Vercel
+3. Verifica que el connection string no termine en `-pooler`
+4. Asegúrate de que incluya `?sslmode=require`
