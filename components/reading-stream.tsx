@@ -39,8 +39,8 @@ function ReadingStreamContent({ reading, loopsUsed, maxLoops = 3, onReask, onFin
     return () => clearInterval(timer)
   }, [reading])
 
-  const canReask = loopsUsed < maxLoops
-  const repreguntasRestantes = maxLoops - loopsUsed
+  const canReask = loopsUsed < maxLoops - 1
+  const repreguntasRestantes = maxLoops - loopsUsed - 1
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-slate-900 via-purple-900/20 to-slate-900">
