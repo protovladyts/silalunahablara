@@ -1,5 +1,6 @@
 import { type NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/db"
+import { generateTarotReading } from "@/lib/openai"
 
 export async function POST(request: NextRequest) {
   try {
@@ -14,7 +15,20 @@ export async function POST(request: NextRequest) {
     // Buscar sesión en la base de datos
     const session = await prisma.tarotSession.findUnique({
       where: { id: sessionId },
-      include: { user: true }
+      include: { 
+        user: {
+          include: {
+            tarotSessions: {
+              where: {
+                status: "READING",
+                id: { not: sessionId } // Excluir la sesión actual
+              },
+              orderBy: { createdAt: 'desc' },
+              take: 3 // Últimas 3 lecturas para contexto
+            }
+          }
+        }
+      }
     })
 
     if (!session) {
@@ -34,24 +48,65 @@ export async function POST(request: NextRequest) {
 
     console.log(`[v0] Generating reading for cards:`, session.drawnCards)
 
-    // Mock reading generation (por ahora)
-    const reading = `Basándome en las cartas que has sacado, puedo ver que ${question} tiene una respuesta compleja. Las energías están alineándose de una manera muy interesante. Te recomiendo meditar sobre esto y confiar en tu intuición.`
+    // Preparar datos para OpenAI
+    const previousReadings = session.user?.tarotSessions?.map(prevSession => ({
+      question: prevSession.question || "",
+      reading: prevSession.reading || "",
+      date: prevSession.createdAt.toISOString().split('T')[0] // Solo la fecha
+    })) || []
 
-    // Actualizar sesión con el reading
-    const updatedSession = await prisma.tarotSession.update({
-      where: { id: sessionId },
-      data: {
-        status: "READING",
-        reading
-      }
-    })
+    // Usar el nombre real del usuario
+    const userName = session.user?.name || undefined
 
-    console.log(`[v0] Session updated with reading`)
+    try {
+      // Generar lectura con OpenAI
+      const aiReading = await generateTarotReading({
+        question,
+        cards: session.drawnCards as Array<{ name: string; upright: boolean }>,
+        userName,
+        previousReadings
+      })
 
-    return NextResponse.json({
-      success: true,
-      reading
-    })
+      console.log(`[v0] AI reading generated successfully`)
+
+      // Actualizar sesión con el reading
+      const updatedSession = await prisma.tarotSession.update({
+        where: { id: sessionId },
+        data: {
+          status: "READING",
+          reading: aiReading.reading
+        }
+      })
+
+      console.log(`[v0] Session updated with AI reading`)
+
+      return NextResponse.json({
+        success: true,
+        reading: aiReading.reading
+      })
+
+    } catch (aiError) {
+      console.error("[v0] Error calling OpenAI:", aiError)
+      
+      // Fallback a lectura mock si OpenAI falla
+      console.log(`[v0] Falling back to mock reading`)
+      const fallbackReading = `Basándome en las cartas que has sacado, puedo ver que ${question} tiene una respuesta compleja. Las energías están alineándose de una manera muy interesante. Te recomiendo meditar sobre esto y confiar en tu intuición.`
+
+      const updatedSession = await prisma.tarotSession.update({
+        where: { id: sessionId },
+        data: {
+          status: "READING",
+          reading: fallbackReading
+        }
+      })
+
+      return NextResponse.json({
+        success: true,
+        reading: fallbackReading,
+        warning: "Lectura generada con respaldo (OpenAI no disponible)"
+      })
+    }
+
   } catch (error) {
     console.error("Error generating reading:", error)
     return NextResponse.json({ error: "Internal server error" }, { status: 500 })

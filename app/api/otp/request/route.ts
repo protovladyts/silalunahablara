@@ -8,14 +8,19 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     console.log("[v0] Request body:", body)
     
-    const { email } = body
+    const { email, name } = body
 
     if (!email || !email.trim()) {
       console.log("[v0] Email validation failed:", { email })
       return NextResponse.json({ error: "Email es requerido" }, { status: 400 })
     }
 
-    console.log("[v0] Processing email:", email.trim())
+    if (!name || !name.trim()) {
+      console.log("[v0] Name validation failed:", { name })
+      return NextResponse.json({ error: "Nombre es requerido" }, { status: 400 })
+    }
+
+    console.log("[v0] Processing user:", { email: email.trim(), name: name.trim() })
 
     // Verificar conexión a la base de datos
     try {
@@ -30,10 +35,13 @@ export async function POST(request: NextRequest) {
     console.log("[v0] Creating/updating user...")
     const user = await prisma.user.upsert({
       where: { email: email.trim() },
-      update: {},
-      create: { email: email.trim() }
+      update: { name: name.trim() }, // Actualizar nombre si el usuario ya existe
+      create: { 
+        email: email.trim(),
+        name: name.trim()
+      }
     })
-    console.log("[v0] User processed:", { userId: user.id, email: user.email })
+    console.log("[v0] User processed:", { userId: user.id, email: user.email, name: user.name })
 
     // Generar código OTP (mock por ahora)
     const otpCode = "123456"

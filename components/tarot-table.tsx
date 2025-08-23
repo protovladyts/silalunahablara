@@ -24,6 +24,7 @@ export function TarotTable({
   const [canReveal, setCanReveal] = useState(false)
   const [cardStates, setCardStates] = useState<("hidden" | "face-down" | "face-up")[]>(["hidden", "hidden", "hidden"])
   const [shufflePhase, setShufflePhase] = useState<"shuffling" | "cutting" | "reassembling">("shuffling")
+  const [isGeneratingReading, setIsGeneratingReading] = useState(false)
 
   useEffect(() => {
     if (isShuffling) {
@@ -79,11 +80,116 @@ export function TarotTable({
     })
 
     if (newRevealed.every((revealed) => revealed)) {
-      setTimeout(onAllRevealed, 1000)
+      // Mostrar estado de carga esotérico
+      setIsGeneratingReading(true)
+      setTimeout(() => {
+        setIsGeneratingReading(false)
+        onAllRevealed()
+      }, 3000) // Mostrar por 3 segundos antes de generar la lectura
     }
   }
 
   const allRevealed = revealedCards.every((revealed) => revealed)
+
+  // Solo mostrar el estado de generación de lectura si todas las cartas están reveladas
+  if (isGeneratingReading && allRevealed) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center p-4 space-y-8 bg-gradient-to-br from-slate-900 via-purple-900/20 to-slate-900">
+        <div className="absolute inset-0 opacity-30">
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_rgba(139,92,246,0.1)_0%,_transparent_70%)]" />
+          <div
+            className="absolute inset-0"
+            style={{
+              backgroundImage: `repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(139,92,246,0.02) 10px, rgba(139,92,246,0.02) 20px),
+                             repeating-linear-gradient(-45deg, transparent, transparent 10px, rgba(168,85,247,0.02) 10px, rgba(168,85,247,0.02) 20px)`,
+            }}
+          />
+        </div>
+
+        {/* Mostrar las cartas reveladas arriba */}
+        <Card className="w-full max-w-md bg-slate-800/80 border-violet-400/30 backdrop-blur-sm relative z-10">
+          <CardHeader className="text-center">
+            <CardTitle className="text-xl text-violet-100">Tus cartas reveladas</CardTitle>
+            <CardDescription className="text-violet-300">
+              Las cartas que has elegido
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="flex justify-center space-x-4">
+            {cards.map((card, index: number) => (
+              <TarotCard
+                key={index}
+                name={card.name}
+                isRevealed={true}
+                onFlip={() => {}}
+                delay={0}
+                cardState="face-up"
+                isReversed={!card.upright}
+              />
+            ))}
+          </CardContent>
+        </Card>
+
+        {/* Estado de carga esotérico debajo */}
+        <Card className="w-full max-w-2xl bg-slate-800/80 border-violet-400/30 backdrop-blur-sm relative z-10">
+          <CardHeader className="text-center">
+            <motion.div
+              className="text-6xl mb-4"
+              animate={{ 
+                rotate: [0, 360],
+                scale: [1, 1.1, 1]
+              }}
+              transition={{ 
+                rotate: { duration: 3, repeat: Infinity, ease: "linear" },
+                scale: { duration: 2, repeat: Infinity, ease: "easeInOut" }
+              }}
+            >
+              🔮
+            </motion.div>
+            <CardTitle className="text-2xl text-violet-100 mb-2">Las energías se están alineando...</CardTitle>
+            <CardDescription className="text-violet-300 text-lg">
+              El universo está interpretando el mensaje de tus cartas
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="text-center space-y-4">
+            <motion.div
+              className="flex justify-center space-x-2"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.5 }}
+            >
+              {[0, 1, 2].map((i) => (
+                <motion.div
+                  key={i}
+                  className="w-2 h-2 bg-violet-400 rounded-full"
+                  animate={{ 
+                    scale: [1, 1.5, 1],
+                    opacity: [0.5, 1, 0.5]
+                  }}
+                  transition={{ 
+                    duration: 1.5, 
+                    repeat: Infinity, 
+                    delay: i * 0.3,
+                    ease: "easeInOut"
+                  }}
+                />
+              ))}
+            </motion.div>
+            
+            <motion.div
+              className="text-violet-200 text-sm space-y-2"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 1 }}
+            >
+              <p>✨ Las cartas revelan sus secretos</p>
+              <p>🌙 Los arcanos se conectan con tu pregunta</p>
+              <p>💫 Preparando tu lectura personalizada...</p>
+            </motion.div>
+          </CardContent>
+        </Card>
+      </div>
+    )
+  }
 
   if (isShuffling) {
     return (
@@ -101,74 +207,29 @@ export function TarotTable({
 
         <Card className="w-full max-w-md bg-slate-800/80 border-violet-400/30 backdrop-blur-sm relative z-10">
           <CardHeader className="text-center">
-            <div className="relative mb-4">
-              <AnimatePresence mode="wait">
-                {shufflePhase === "shuffling" && (
-                  <motion.div
-                    key="shuffle"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    className="flex justify-center space-x-2"
-                  >
-                    {[0, 1, 2].map((i) => (
-                      <motion.div
-                        key={i}
-                        className="w-16 h-24 bg-gradient-to-br from-violet-900 to-purple-800 rounded-lg border border-violet-400/30"
-                        animate={{
-                          y: [0, -20, 0],
-                          rotateZ: [0, 10, -10, 0],
-                        }}
-                        transition={{
-                          duration: 0.8,
-                          repeat: Number.POSITIVE_INFINITY,
-                          delay: i * 0.2,
-                        }}
-                      />
-                    ))}
-                  </motion.div>
-                )}
-
-                {shufflePhase === "cutting" && (
-                  <motion.div
-                    key="cut"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    className="flex justify-center"
-                  >
-                    <motion.div
-                      className="w-16 h-24 bg-gradient-to-br from-violet-900 to-purple-800 rounded-lg border border-violet-400/30"
-                      animate={{ x: [-20, 20, -20] }}
-                      transition={{ duration: 1.5, repeat: Number.POSITIVE_INFINITY }}
-                    />
-                  </motion.div>
-                )}
-
-                {shufflePhase === "reassembling" && (
-                  <motion.div
-                    key="reassemble"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    className="flex justify-center"
-                  >
-                    <motion.div
-                      className="w-16 h-24 bg-gradient-to-br from-violet-900 to-purple-800 rounded-lg border border-violet-400/30"
-                      animate={{ scale: [1, 1.1, 1] }}
-                      transition={{ duration: 0.5, repeat: Number.POSITIVE_INFINITY }}
-                    />
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
-
+            <motion.div
+              className="text-4xl mb-2"
+              animate={{ 
+                rotate: shufflePhase === "shuffling" ? [0, 360] : 0,
+                scale: shufflePhase === "cutting" ? [1, 1.2, 1] : 1
+              }}
+              transition={{ 
+                rotate: { duration: 1, repeat: shufflePhase === "shuffling" ? Infinity : 0 },
+                scale: { duration: 0.8, repeat: shufflePhase === "cutting" ? Infinity : 0 }
+              }}
+            >
+              {shufflePhase === "shuffling" ? "🃏" : shufflePhase === "cutting" ? "✂️" : "🔮"}
+            </motion.div>
             <CardTitle className="text-xl text-violet-100">
-              {shufflePhase === "shuffling" && "Barajando las cartas..."}
-              {shufflePhase === "cutting" && "Cortando el mazo..."}
-              {shufflePhase === "reassembling" && "Reagrupando..."}
+              {shufflePhase === "shuffling" ? "Revolviendo las cartas..." : 
+               shufflePhase === "cutting" ? "Cortando el mazo..." : 
+               "Reagrupando las energías..."}
             </CardTitle>
-            <CardDescription className="text-violet-300">Las energías se están alineando</CardDescription>
+            <CardDescription className="text-violet-300">
+              {shufflePhase === "shuffling" ? "Las energías se están mezclando" : 
+               shufflePhase === "cutting" ? "Separando lo que debe separarse" : 
+               "Las energías se están alineando"}
+            </CardDescription>
           </CardHeader>
         </Card>
       </div>
@@ -261,15 +322,42 @@ export function TarotTable({
         </CardContent>
       </Card>
 
-      {allRevealed && (
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="text-center relative z-10"
-        >
-          <p className="text-violet-300 mb-4">Todas las cartas han sido reveladas</p>
-        </motion.div>
-      )}
+             {allRevealed && !isGeneratingReading && (
+         <motion.div
+           initial={{ opacity: 0, y: 20 }}
+           animate={{ opacity: 1, y: 0 }}
+           className="text-center relative z-10"
+         >
+           <motion.p 
+             className="text-violet-300 mb-4"
+             animate={{ 
+               scale: [1, 1.05, 1],
+               opacity: [0.8, 1, 0.8]
+             }}
+             transition={{ 
+               duration: 3, 
+               repeat: Infinity, 
+               ease: "easeInOut" 
+             }}
+           >
+             ✨ Todas las cartas han sido reveladas
+           </motion.p>
+           <div className="text-violet-200 text-sm">
+             Preparando tu lectura
+             <motion.span
+               animate={{ opacity: [0, 1, 0] }}
+               transition={{ 
+                 duration: 1.5, 
+                 repeat: Infinity, 
+                 ease: "easeInOut" 
+               }}
+               className="inline-block ml-1"
+             >
+               ...
+             </motion.span>
+           </div>
+         </motion.div>
+       )}
     </div>
   )
 }

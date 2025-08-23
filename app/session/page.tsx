@@ -325,6 +325,7 @@ export default function SessionPage() {
                 reading={reading}
                 loopsUsed={loopsUsed}
                 maxLoops={MAX_LOOPS}
+                cards={cards}
                 onReask={handleReask}
                 onFinish={handleFinish}
                 onVideoCallOffer={handleVideoCallOffer}

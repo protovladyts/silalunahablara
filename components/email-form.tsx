@@ -8,17 +8,18 @@ import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 
 interface EmailFormProps {
-  onSubmit: (email: string) => void
+  onSubmit: (data: { email: string; name: string }) => void
   isLoading?: boolean
 }
 
 export function EmailForm({ onSubmit, isLoading = false }: EmailFormProps) {
   const [email, setEmail] = useState("")
+  const [name, setName] = useState("")
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    if (email.trim()) {
-      onSubmit(email.trim())
+    if (email.trim() && name.trim()) {
+      onSubmit({ email: email.trim(), name: name.trim() })
     }
   }
 
@@ -29,11 +30,20 @@ export function EmailForm({ onSubmit, isLoading = false }: EmailFormProps) {
           <div className="text-6xl">🌙</div>
           <CardTitle className="title-rose-garden text-card-foreground">Si la Luna Hablara</CardTitle>
           <CardDescription className="text-muted-foreground">
-            Sesión de tarot gratis. Dejá tu mail y arrancamos.
+            Sesión de tarot gratis. Dejá tu nombre y mail para arrancar.
           </CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
+            <Input
+              type="text"
+              placeholder="Tu nombre"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              required
+              className="bg-input border-border text-foreground"
+              disabled={isLoading}
+            />
             <Input
               type="email"
               placeholder="tu@email.com"
@@ -46,7 +56,7 @@ export function EmailForm({ onSubmit, isLoading = false }: EmailFormProps) {
             <Button
               type="submit"
               className="w-full bg-primary text-primary-foreground hover:bg-primary/90"
-              disabled={isLoading || !email.trim()}
+              disabled={isLoading || !email.trim() || !name.trim()}
             >
               {isLoading ? "Enviando..." : "Comenzar sesión"}
             </Button>

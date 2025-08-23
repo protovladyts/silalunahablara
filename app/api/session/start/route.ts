@@ -1,5 +1,6 @@
 import { type NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/db"
+import { API_CONFIG } from "@/app/api/config"
 
 export async function POST(request: NextRequest) {
   try {
@@ -26,6 +27,23 @@ export async function POST(request: NextRequest) {
         data: { email }
       })
       console.log(`[v0] Created new user: ${user.id}`)
+    }
+
+    // Verificar si el usuario ya usó todas sus consultas gratuitas
+    const existingSessions = await prisma.tarotSession.count({
+      where: { 
+        userId: user.id,
+        status: "READING" // Solo contar sesiones completadas
+      }
+    })
+
+    if (existingSessions >= API_CONFIG.MAX_TAROT_READINGS) {
+      console.log(`[v0] User ${email} has exceeded maximum tarot readings: ${existingSessions}/${API_CONFIG.MAX_TAROT_READINGS}`)
+      return NextResponse.json({ 
+        error: "Ya has usado todas tus consultas gratuitas de tarot",
+        maxReadings: API_CONFIG.MAX_TAROT_READINGS,
+        currentReadings: existingSessions
+      }, { status: 403 })
     }
 
     // Crear sesión de tarot

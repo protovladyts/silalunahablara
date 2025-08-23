@@ -1,76 +1,127 @@
 # Configuración de la Aplicación
 
-## Archivo de Configuración
+## 📁 Estructura de archivos
 
-Todas las configuraciones importantes de la aplicación están centralizadas en `lib/config.ts`.
+```
+lib/
+├── shared-config.ts     # 🎯 CONFIGURACIÓN PRINCIPAL (única fuente de verdad)
+├── config.ts            # 🔄 Re-exporta SHARED_CONFIG como APP_CONFIG (frontend)
 
-## Configuraciones Disponibles
+app/api/
+├── config.ts            # 🔄 Re-exporta SHARED_CONFIG como API_CONFIG (backend)
+└── session/
+    └── start/
+        └── route.ts     # ✅ Usa API_CONFIG para validaciones
+```
 
-### Tarot Readings
-- `MAX_TAROT_READINGS`: Número total de preguntas permitidas (1 inicial + repreguntas)
-  - **Valor actual**: 3
-  - **Significado**: El usuario puede hacer 1 pregunta inicial + 2 repreguntas = 3 total
+## 🔧 Cómo funciona
 
-### Paquete de Preguntas Adicionales
-- `ADDITIONAL_READINGS_PRICE`: Precio del paquete de preguntas adicionales
-  - **Valor actual**: 1 USD
-- `ADDITIONAL_READINGS_COUNT`: Número de preguntas en el paquete adicional
-  - **Valor actual**: 3
+### **1. Configuración centralizada**
+- **`lib/shared-config.ts`** es la **única fuente de verdad**
+- Todos los valores se definen aquí una sola vez
+- Frontend y backend importan desde este archivo
 
-### Videollamada
-- `VIDEO_CALL_PRICE`: Precio de la videollamada
-  - **Valor actual**: 15 USD
-- `VIDEO_CALL_DURATION`: Duración de la videollamada
-  - **Valor actual**: "30 minutos"
+### **2. Re-exports para compatibilidad**
+- **Frontend**: `import { APP_CONFIG } from "@/lib/config"`
+- **Backend**: `import { API_CONFIG } from "@/app/api/config"`
+- Ambos apuntan a la misma configuración
 
-## Cómo Cambiar la Configuración
+### **3. Validación en backend**
+- El endpoint `/api/session/start` ahora valida el límite de consultas
+- Previene que usuarios excedan `MAX_TAROT_READINGS`
+- Retorna error 403 si se excede el límite
 
-### Ejemplo 1: Cambiar el número de repreguntas gratis
+## 📝 Valores configurables
+
 ```typescript
-// En lib/config.ts
-export const APP_CONFIG = {
-  MAX_TAROT_READINGS: 5, // Cambiar de 3 a 5 (1 inicial + 4 repreguntas)
-  // ... resto de configuraciones
+export const SHARED_CONFIG = {
+  // Número total de preguntas permitidas (1 inicial + repreguntas)
+  MAX_TAROT_READINGS: 3,
+  
+  // Precio del paquete de preguntas adicionales
+  ADDITIONAL_READINGS_PRICE: 1, // USD
+  
+  // Número de preguntas en el paquete adicional
+  ADDITIONAL_READINGS_COUNT: 3,
+  
+  // Precio de la videollamada
+  VIDEO_CALL_PRICE: 15, // USD
+  
+  // Duración de la videollamada
+  VIDEO_CALL_DURATION: "30 minutos",
+} as const
+```
+
+## ✅ Beneficios de la nueva implementación
+
+### **Antes (problemático):**
+- ❌ Configuración solo en frontend
+- ❌ Backend no validaba límites
+- ❌ Inconsistencias entre frontend y backend
+- ❌ Usuario podría hacer más consultas de las permitidas
+
+### **Después (solución):**
+- ✅ **Una sola fuente de verdad** en `shared-config.ts`
+- ✅ **Validación en backend** usando `API_CONFIG`
+- ✅ **Sincronización automática** entre frontend y backend
+- ✅ **Prevención de abusos** en el límite de consultas
+
+## 🚀 Cómo cambiar valores
+
+### **Para cambiar `MAX_TAROT_READINGS` a 2:**
+
+1. **Editar `lib/shared-config.ts`:**
+   ```typescript
+   MAX_TAROT_READINGS: 2, // Cambiar de 3 a 2
+   ```
+
+2. **Recompilar la aplicación:**
+   ```bash
+   pnpm run build
+   ```
+
+3. **Resultado:**
+   - ✅ Frontend mostrará "2 consultas totales"
+   - ✅ Backend validará máximo 2 consultas
+   - ✅ Usuario no podrá hacer más de 2 consultas
+   - ✅ **Todo sincronizado automáticamente**
+
+## 🔍 Validaciones implementadas
+
+### **Endpoint `/api/session/start`:**
+- Cuenta sesiones existentes del usuario
+- Valida contra `API_CONFIG.MAX_TAROT_READINGS`
+- Retorna error 403 si se excede el límite
+- Incluye información detallada en la respuesta
+
+### **Respuesta de error:**
+```json
+{
+  "error": "Ya has usado todas tus consultas gratuitas de tarot",
+  "maxReadings": 3,
+  "currentReadings": 3
 }
 ```
 
-### Ejemplo 2: Cambiar el precio del paquete adicional
-```typescript
-// En lib/config.ts
-export const APP_CONFIG = {
-  ADDITIONAL_READINGS_PRICE: 2, // Cambiar de 1 USD a 2 USD
-  // ... resto de configuraciones
-}
-```
+## 📱 Compatibilidad
 
-### Ejemplo 3: Cambiar el precio de la videollamada
-```typescript
-// En lib/config.ts
-export const APP_CONFIG = {
-  VIDEO_CALL_PRICE: 20, // Cambiar de 15 USD a 20 USD
-  // ... resto de configuraciones
-}
-```
+- **Frontend**: Funciona exactamente igual que antes
+- **Backend**: Ahora valida límites correctamente
+- **API**: Respuestas consistentes y seguras
+- **Usuario**: Experiencia coherente en toda la aplicación
 
-## Flujo de Usuario
+## 🎯 Casos de uso
 
-### Con configuración actual (MAX_TAROT_READINGS: 3):
-1. **Pregunta 1**: Pregunta inicial (gratis)
-2. **Pregunta 2**: Primera repregunta (gratis)
-3. **Pregunta 3**: Segunda repregunta (gratis)
-4. **Sin más preguntas**: Se muestra el upsell "3 Preguntas más por $1 USD"
+### **Escenario 1: Usuario nuevo**
+- ✅ Puede hacer hasta `MAX_TAROT_READINGS` consultas
+- ✅ Frontend y backend sincronizados
 
-### Si cambias a MAX_TAROT_READINGS: 5:
-1. **Pregunta 1**: Pregunta inicial (gratis)
-2. **Pregunta 2**: Primera repregunta (gratis)
-3. **Pregunta 3**: Segunda repregunta (gratis)
-4. **Pregunta 4**: Tercera repregunta (gratis)
-5. **Pregunta 5**: Cuarta repregunta (gratis)
-6. **Sin más preguntas**: Se muestra el upsell
+### **Escenario 2: Usuario que excede límite**
+- ❌ Frontend: "No más repreguntas"
+- ❌ Backend: Error 403 con mensaje claro
+- ✅ **Consistencia total**
 
-## Notas Importantes
-
-- **Reinicia el servidor** después de cambiar la configuración
-- Los cambios se aplican automáticamente en toda la aplicación
-- La configuración es de solo lectura (`as const`) para prevenir cambios accidentales
-- Todos los componentes usan esta configuración centralizada
+### **Escenario 3: Cambio de configuración**
+- ✅ Editar solo `shared-config.ts`
+- ✅ Recompilar aplicación
+- ✅ **Todo se actualiza automáticamente**

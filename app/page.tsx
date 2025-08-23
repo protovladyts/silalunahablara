@@ -3,14 +3,13 @@
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { EmailForm } from "@/components/email-form"
-import { createUser, findUserByEmail } from "@/lib/mocks/mockDb"
 import { StarsBackground } from "@/components/stars-background"
 
 export default function HomePage() {
   const [isLoading, setIsLoading] = useState(false)
   const router = useRouter()
 
-  const handleEmailSubmit = async (email: string) => {
+  const handleEmailSubmit = async (data: { email: string; name: string }) => {
     setIsLoading(true)
 
     try {
@@ -19,7 +18,7 @@ export default function HomePage() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ email }),
+        body: JSON.stringify({ email: data.email, name: data.name }),
       })
 
       if (!response.ok) {
@@ -27,13 +26,8 @@ export default function HomePage() {
         throw new Error(error.error || "Error enviando código")
       }
 
-      // Create or find user
-      let user = findUserByEmail(email)
-      if (!user) {
-        user = createUser(email)
-      }
-
-      localStorage.setItem("userEmail", email)
+      localStorage.setItem("userEmail", data.email)
+      localStorage.setItem("userName", data.name)
 
       // Navigate to verification
       router.push("/verify")
