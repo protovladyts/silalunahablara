@@ -137,7 +137,7 @@ export async function POST(request: NextRequest) {
     // Generate upright/reversed using CSPRNG (50% chance each)
     const orientationBytes = randomBytes(count)
 
-    const drawnCards = drawnCardIndices.map((cardIndex, i) => {
+    const drawnCards = drawnCardIndices.map((cardIndex: number, i: number) => {
       // Generar cartas invertidas aleatoriamente (50% chance)
       const upright = orientationBytes[i] >= 128 // 50% chance
       const cardName = TAROT_DECK[cardIndex]

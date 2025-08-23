@@ -25,7 +25,7 @@ function ProgressIndicatorContent({ currentStep, loopsUsed = 0, maxLoops = 3 }: 
       <div className="p-3">
         {/* Step indicators */}
         <div className="flex items-center space-x-2 mb-2">
-          {steps.map((step, index) => (
+          {steps.map((step, index: number) => (
             <div key={step.key} className="flex items-center">
               <motion.div
                 className={`flex items-center justify-center w-8 h-8 rounded-full text-sm ${
@@ -64,7 +64,7 @@ function ProgressIndicatorFallback({ currentStep, loopsUsed = 0, maxLoops = 3 }:
     <Card className="fixed top-4 left-4 right-4 md:left-auto md:right-4 md:w-auto bg-slate-800/90 border-violet-400/30 backdrop-blur-sm z-50">
       <div className="p-3">
         <div className="flex items-center space-x-2 mb-2">
-          {steps.map((step, index) => (
+          {steps.map((step, index: number) => (
             <div key={step.key} className="flex items-center">
               <div
                 className={`flex items-center justify-center w-8 h-8 rounded-full text-sm ${

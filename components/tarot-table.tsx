@@ -245,7 +245,7 @@ export function TarotTable({
           </CardDescription>
         </CardHeader>
         <CardContent className="flex justify-center space-x-4">
-          {cards.map((card, index) => {
+          {cards.map((card, index: number) => {
             return (
               <TarotCard
                 key={index}
