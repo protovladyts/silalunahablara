@@ -1,6 +1,6 @@
 import { type NextRequest, NextResponse } from "next/server"
 import { randomBytes } from "crypto"
-import { findTarotSession, updateTarotSession } from "@/lib/mocks/mockDb"
+import { prisma } from "@/lib/db"
 
 // Fisher-Yates shuffle using CSPRNG
 function shuffleArray<T>(array: T[], seed: Buffer): T[] {
@@ -27,10 +27,20 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "sessionId is required" }, { status: 400 })
     }
 
-    const session = findTarotSession(sessionId)
+    console.log(`[v0] Shuffling session: ${sessionId}`)
+
+    // Buscar sesión en la base de datos
+    const session = await prisma.tarotSession.findUnique({
+      where: { id: sessionId },
+      include: { user: true }
+    })
+
     if (!session) {
+      console.log(`[v0] Session not found: ${sessionId}`)
       return NextResponse.json({ error: "Session not found" }, { status: 404 })
     }
+
+    console.log(`[v0] Found session:`, { id: session.id, status: session.status, userId: session.userId })
 
     // Generate cryptographically secure random seed
     const shuffleSeed = randomBytes(32).toString("hex")
@@ -49,18 +59,25 @@ export async function POST(request: NextRequest) {
     // Apply the cut
     const cutDeck = [...shuffledIndices.slice(cutIndex), ...shuffledIndices.slice(0, cutIndex)]
 
-    // Update session
-    const updatedSession = updateTarotSession(sessionId, {
-      status: "shuffled",
-      question: question || session.question,
-      shuffleSeed,
-      deckOrder: cutDeck,
-      cutIndex,
+    console.log(`[v0] Updating session with status: SHUFFLED`)
+
+    // Update session in database
+    const updatedSession = await prisma.tarotSession.update({
+      where: { id: sessionId },
+      data: {
+        status: "SHUFFLED",
+        question: question || session.question,
+        shuffleSeed,
+        deckOrder: cutDeck,
+        cutIndex,
+      }
     })
 
-    if (!updatedSession) {
-      return NextResponse.json({ error: "Failed to update session" }, { status: 500 })
-    }
+    console.log(`[v0] Session updated successfully:`, { 
+      id: updatedSession.id, 
+      status: updatedSession.status, 
+      hasDeckOrder: !!updatedSession.deckOrder 
+    })
 
     return NextResponse.json({
       success: true,

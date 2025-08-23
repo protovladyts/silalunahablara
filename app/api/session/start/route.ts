@@ -1,5 +1,5 @@
 import { type NextRequest, NextResponse } from "next/server"
-import { createTarotSession } from "@/lib/mocks/mockDb"
+import { prisma } from "@/lib/db"
 
 export async function POST(request: NextRequest) {
   try {
@@ -14,7 +14,29 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Sesión no válida" }, { status: 401 })
     }
 
-    const session = createTarotSession(email)
+    console.log(`[v0] Creating tarot session for user: ${email}`)
+
+    // Buscar o crear usuario
+    let user = await prisma.user.findUnique({
+      where: { email }
+    })
+
+    if (!user) {
+      user = await prisma.user.create({
+        data: { email }
+      })
+      console.log(`[v0] Created new user: ${user.id}`)
+    }
+
+    // Crear sesión de tarot
+    const session = await prisma.tarotSession.create({
+      data: {
+        userId: user.id,
+        status: "INTAKE",
+        loopsUsed: 0,
+        question: question
+      }
+    })
 
     console.log(`[v0] Created tarot session ${session.id} for user ${email}`)
 

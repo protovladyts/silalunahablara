@@ -19,6 +19,7 @@ export function IntakeForm({ onSubmit, isLoading = false }: IntakeFormProps) {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     if (question.trim()) {
+      console.log("[v0] IntakeForm - Submitting question:", question.trim())
       onSubmit(question.trim())
     }
   }

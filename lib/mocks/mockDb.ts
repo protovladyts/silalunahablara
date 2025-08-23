@@ -39,48 +39,6 @@ export interface TarotSession {
   createdAt: Date
 }
 
-// In-memory storage
-export const mockUsers: User[] = []
-export const mockSessions: Session[] = []
-export const mockOtps: OtpEntry[] = []
-export const mockTarotSessions: TarotSession[] = []
-
-export const users: Record<string, { hasFreeTarot: boolean }> = {}
-export const sessions: Record<string, TarotSession> = {}
-
-export const createUser = (email: string): User => {
-  const user: User = {
-    id: Math.random().toString(36).substr(2, 9),
-    email,
-    createdAt: new Date(),
-    hasFreeTarot: false,
-  }
-  mockUsers.push(user)
-
-  if (!users[email]) {
-    users[email] = { hasFreeTarot: false }
-  }
-
-  return user
-}
-
-export const findUserByEmail = (email: string): User | undefined => {
-  return mockUsers.find((user) => user.email === email)
-}
-
-export const createSession = (userId: string, question: string, cards: string[], reading: string): Session => {
-  const session: Session = {
-    id: Math.random().toString(36).substr(2, 9),
-    userId,
-    question,
-    cards,
-    reading,
-    createdAt: new Date(),
-  }
-  mockSessions.push(session)
-  return session
-}
-
 // 78 Tarot cards (Major + Minor Arcana)
 export const TAROT_DECK = [
   // Major Arcana (0-21)
@@ -172,64 +130,205 @@ export const TAROT_DECK = [
   "Rey de Oros",
 ]
 
-export const markFreeTarotUsed = (email: string): void => {
-  if (!users[email]) {
-    users[email] = { hasFreeTarot: true }
-  } else {
-    users[email].hasFreeTarot = true
+// Singleton Database Class
+class MockDatabase {
+  private static instance: MockDatabase
+  private mockUsers: User[] = []
+  private mockSessions: Session[] = []
+  private mockOtps: OtpEntry[] = []
+  private mockTarotSessions: TarotSession[] = []
+  private users: Record<string, { hasFreeTarot: boolean }> = {}
+  private sessions: Record<string, TarotSession> = {}
+
+  private constructor() {}
+
+  public static getInstance(): MockDatabase {
+    if (!MockDatabase.instance) {
+      MockDatabase.instance = new MockDatabase()
+    }
+    return MockDatabase.instance
   }
 
-  // Also update in mockUsers array
-  const user = mockUsers.find((u) => u.email === email)
-  if (user) {
-    user.hasFreeTarot = true
+  public createUser(email: string): User {
+    // Usar timestamp + email hash para generar ID determinístico
+    const timestamp = Date.now()
+    const emailHash = email.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0)
+    const userId = `user_${timestamp}_${emailHash}`
+    
+    const user: User = {
+      id: userId,
+      email,
+      createdAt: new Date(),
+      hasFreeTarot: false,
+    }
+    this.mockUsers.push(user)
+
+    if (!this.users[email]) {
+      this.users[email] = { hasFreeTarot: false }
+    }
+
+    return user
+  }
+
+  public findUserByEmail(email: string): User | undefined {
+    return this.mockUsers.find((user) => user.email === email)
+  }
+
+  public createSession(userId: string, question: string, cards: string[], reading: string): Session {
+    // Usar timestamp + userId hash para generar ID determinístico
+    const timestamp = Date.now()
+    const userIdHash = userId.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0)
+    const sessionId = `old_session_${timestamp}_${userIdHash}`
+    
+    const session: Session = {
+      id: sessionId,
+      userId,
+      question,
+      cards,
+      reading,
+      createdAt: new Date(),
+    }
+    this.mockSessions.push(session)
+    return session
+  }
+
+  public markFreeTarotUsed(email: string): void {
+    if (!this.users[email]) {
+      this.users[email] = { hasFreeTarot: true }
+    } else {
+      this.users[email].hasFreeTarot = true
+    }
+
+    // Also update in mockUsers array
+    const user = this.mockUsers.find((u) => u.email === email)
+    if (user) {
+      user.hasFreeTarot = true
+    }
+  }
+
+  public hasUsedFreeTarot(email: string): boolean {
+    return this.users[email]?.hasFreeTarot || false
+  }
+
+  public createTarotSession(userId: string): TarotSession {
+    console.log(`[v0] createTarotSession called for userId: ${userId}`)
+    console.log(`[v0] Current state - sessions count:`, Object.keys(this.sessions).length)
+    console.log(`[v0] Current state - mockTarotSessions count:`, this.mockTarotSessions.length)
+    
+    // Usar timestamp + userId hash para generar ID determinístico
+    const timestamp = Date.now()
+    const userIdHash = userId.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0)
+    const sessionId = `session_${timestamp}_${userIdHash}`
+    
+    const session: TarotSession = {
+      id: sessionId,
+      userId,
+      status: "intake",
+      loopsUsed: 0,
+      createdAt: new Date(),
+    }
+    
+    console.log(`[v0] Created session object:`, { id: session.id, userId: session.userId, status: session.status })
+    
+    this.mockTarotSessions.push(session)
+    this.sessions[session.id] = session
+    
+    console.log(`[v0] After saving - sessions count:`, Object.keys(this.sessions).length)
+    console.log(`[v0] After saving - mockTarotSessions count:`, this.mockTarotSessions.length)
+    console.log(`[v0] After saving - sessions keys:`, Object.keys(this.sessions))
+    
+    return session
+  }
+
+  public findTarotSession(sessionId: string): TarotSession | undefined {
+    // Buscar en ambos lugares
+    let session = this.sessions[sessionId] || this.mockTarotSessions.find((s) => s.id === sessionId)
+    
+    // Si encontramos la sesión en mockTarotSessions pero no en sessions, sincronizar
+    if (session && !this.sessions[sessionId]) {
+      this.sessions[sessionId] = session
+    }
+    
+    return session
+  }
+
+  public updateTarotSession(sessionId: string, updates: Partial<TarotSession>): TarotSession | null {
+    console.log(`[v0] updateTarotSession called for: ${sessionId}`)
+    console.log(`[v0] Updates:`, updates)
+    
+    // Buscar la sesión en ambos lugares
+    let session = this.sessions[sessionId] || this.mockTarotSessions.find((s) => s.id === sessionId)
+    
+    if (!session) {
+      console.log(`[v0] No session found for: ${sessionId}`)
+      console.log(`[v0] sessions keys:`, Object.keys(this.sessions))
+      console.log(`[v0] mockTarotSessions count:`, this.mockTarotSessions.length)
+      return null
+    }
+
+    console.log(`[v0] Found session:`, { id: session.id, status: session.status })
+
+    const updatedSession = { ...session, ...updates }
+    
+    // Actualizar en ambos lugares
+    this.sessions[sessionId] = updatedSession
+    
+    const sessionIndex = this.mockTarotSessions.findIndex((s) => s.id === sessionId)
+    if (sessionIndex !== -1) {
+      this.mockTarotSessions[sessionIndex] = updatedSession
+      console.log(`[v0] Updated in mockTarotSessions at index: ${sessionIndex}`)
+    } else {
+      // Si no estaba en mockTarotSessions, agregarlo
+      this.mockTarotSessions.push(updatedSession)
+      console.log(`[v0] Added to mockTarotSessions`)
+    }
+
+    console.log(`[v0] Final session state:`, { 
+      id: updatedSession.id, 
+      status: updatedSession.status,
+      hasDeckOrder: !!updatedSession.deckOrder 
+    })
+
+    return updatedSession
+  }
+
+  public getSession(sessionId: string): TarotSession | undefined {
+    return this.mockTarotSessions.find((session) => session.id === sessionId)
+  }
+
+  public updateSessionReading(sessionId: string, reading: string): void {
+    const session = this.findTarotSession(sessionId)
+    if (session) {
+      session.reading = reading
+      session.status = "complete"
+    }
+  }
+
+  // Debug methods
+  public getDebugInfo() {
+    return {
+      sessionsCount: Object.keys(this.sessions).length,
+      mockTarotSessionsCount: this.mockTarotSessions.length,
+      sessionsKeys: Object.keys(this.sessions),
+      mockTarotSessionsIds: this.mockTarotSessions.map(s => s.id)
+    }
   }
 }
 
-export const hasUsedFreeTarot = (email: string): boolean => {
-  return users[email]?.hasFreeTarot || false
-}
+// Export singleton instance
+const db = MockDatabase.getInstance()
 
-export const createTarotSession = (userId: string): TarotSession => {
-  const session: TarotSession = {
-    id: Math.random().toString(36).substr(2, 9),
-    userId,
-    status: "intake",
-    loopsUsed: 0,
-    createdAt: new Date(),
-  }
-  mockTarotSessions.push(session)
-  sessions[session.id] = session
-  return session
-}
+// Export functions that use the singleton
+export const createUser = (email: string): User => db.createUser(email)
+export const findUserByEmail = (email: string): User | undefined => db.findUserByEmail(email)
+export const createSession = (userId: string, question: string, cards: string[], reading: string): Session => db.createSession(userId, question, cards, reading)
+export const markFreeTarotUsed = (email: string): void => db.markFreeTarotUsed(email)
+export const hasUsedFreeTarot = (email: string): boolean => db.hasUsedFreeTarot(email)
+export const createTarotSession = (userId: string): TarotSession => db.createTarotSession(userId)
+export const findTarotSession = (sessionId: string): TarotSession | undefined => db.findTarotSession(sessionId)
+export const updateTarotSession = (sessionId: string, updates: Partial<TarotSession>): TarotSession | null => db.updateTarotSession(sessionId, updates)
+export const getSession = (sessionId: string): TarotSession | undefined => db.getSession(sessionId)
+export const updateSessionReading = (sessionId: string, reading: string): void => db.updateSessionReading(sessionId, reading)
 
-export const findTarotSession = (sessionId: string): TarotSession | undefined => {
-  return sessions[sessionId] || mockTarotSessions.find((session) => session.id === sessionId)
-}
-
-export const updateTarotSession = (sessionId: string, updates: Partial<TarotSession>): TarotSession | null => {
-  const session = sessions[sessionId]
-  if (!session) return null
-
-  const updatedSession = { ...session, ...updates }
-  sessions[sessionId] = updatedSession
-
-  const sessionIndex = mockTarotSessions.findIndex((s) => s.id === sessionId)
-  if (sessionIndex !== -1) {
-    mockTarotSessions[sessionIndex] = updatedSession
-  }
-
-  return updatedSession
-}
-
-export const getSession = (sessionId: string): TarotSession | undefined => {
-  return mockTarotSessions.find((session) => session.id === sessionId)
-}
-
-export const updateSessionReading = (sessionId: string, reading: string): void => {
-  const session = findTarotSession(sessionId)
-  if (session) {
-    session.reading = reading
-    session.status = "complete"
-  }
-}
+// Export debug function
+export const getDebugInfo = () => db.getDebugInfo()

@@ -27,7 +27,7 @@ export function EmailForm({ onSubmit, isLoading = false }: EmailFormProps) {
       <Card className="w-full max-w-md bg-card border-border">
         <CardHeader className="text-center space-y-4">
           <div className="text-6xl">🌙</div>
-          <CardTitle className="text-2xl font-bold text-card-foreground">Si la Luna Hablara</CardTitle>
+          <CardTitle className="title-rose-garden text-card-foreground">Si la Luna Hablara</CardTitle>
           <CardDescription className="text-muted-foreground">
             Sesión de tarot gratis. Dejá tu mail y arrancamos.
           </CardDescription>

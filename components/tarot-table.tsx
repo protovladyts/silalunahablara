@@ -6,13 +6,20 @@ import { TarotCard } from "./tarot-card"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 
 interface TarotTableProps {
-  cards: Array<{ name: string; upright: boolean }> | string[]
+  cards: Array<{ name: string; upright: boolean }>
   onAllRevealed: () => void
   isShuffling?: boolean
   isDealingCards?: boolean
+  onShuffleComplete?: () => void
 }
 
-export function TarotTable({ cards, onAllRevealed, isShuffling = false, isDealingCards = false }: TarotTableProps) {
+export function TarotTable({ 
+  cards, 
+  onAllRevealed, 
+  isShuffling = false, 
+  isDealingCards = false,
+  onShuffleComplete 
+}: TarotTableProps) {
   const [revealedCards, setRevealedCards] = useState<boolean[]>([false, false, false])
   const [canReveal, setCanReveal] = useState(false)
   const [cardStates, setCardStates] = useState<("hidden" | "face-down" | "face-up")[]>(["hidden", "hidden", "hidden"])
@@ -26,6 +33,12 @@ export function TarotTable({ cards, onAllRevealed, isShuffling = false, isDealin
         setShufflePhase("cutting")
         await new Promise((resolve) => setTimeout(resolve, 1500))
         setShufflePhase("reassembling")
+        await new Promise((resolve) => setTimeout(resolve, 1500))
+        
+        // Después de completar el shuffle, llamar al callback
+        if (onShuffleComplete) {
+          onShuffleComplete()
+        }
       }
       shuffleSequence()
     } else if (isDealingCards && !isShuffling) {
@@ -44,12 +57,13 @@ export function TarotTable({ cards, onAllRevealed, isShuffling = false, isDealin
       }
 
       dealCards()
-    } else if (!isShuffling && !isDealingCards) {
+    } else if (!isShuffling && !isDealingCards && cards.length > 0) {
+      // Cuando no está shuffling y hay cartas, mostrar las cartas face-down
       setCardStates(["face-down", "face-down", "face-down"])
       const timer = setTimeout(() => setCanReveal(true), 1000)
       return () => clearTimeout(timer)
     }
-  }, [isShuffling, isDealingCards])
+  }, [isShuffling, isDealingCards, onShuffleComplete, cards.length])
 
   const handleCardFlip = (index: number) => {
     if (!canReveal || revealedCards[index] || cardStates[index] === "hidden") return
@@ -177,12 +191,12 @@ export function TarotTable({ cards, onAllRevealed, isShuffling = false, isDealin
             {[0, 1, 2].map((index) => (
               <TarotCard
                 key={index}
-                name={typeof cards[index] === "string" ? cards[index] : cards[index]?.name || ""}
+                name={cards[index]?.name || ""}
                 isRevealed={false}
                 onFlip={() => {}}
                 delay={index * 0.6}
                 cardState={cardStates[index]}
-                isReversed={typeof cards[index] !== "string" && !cards[index]?.upright}
+                isReversed={!cards[index]?.upright}
               />
             ))}
           </CardContent>
@@ -190,6 +204,25 @@ export function TarotTable({ cards, onAllRevealed, isShuffling = false, isDealin
       </div>
     )
   }
+
+  // Solo mostrar las cartas si hay cartas y no están en estado hidden
+  if (cards.length === 0 || cardStates.every(state => state === "hidden")) {
+    return (
+      <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-slate-900 via-purple-900/20 to-slate-900">
+        <Card className="w-full max-w-md bg-slate-800/80 border-violet-400/30 backdrop-blur-sm relative z-10">
+          <CardHeader className="text-center">
+            <CardTitle className="text-xl text-violet-100">Preparando las cartas...</CardTitle>
+            <CardDescription className="text-violet-300">Espera un momento</CardDescription>
+          </CardHeader>
+        </Card>
+      </div>
+    )
+  }
+
+  // Debug: mostrar la estructura de las cartas
+  console.log("[v0] TarotTable - Cards received:", cards)
+  console.log("[v0] TarotTable - Card states:", cardStates)
+  console.log("[v0] TarotTable - Can reveal:", canReveal)
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center p-4 space-y-8 bg-gradient-to-br from-slate-900 via-purple-900/20 to-slate-900">
@@ -212,17 +245,19 @@ export function TarotTable({ cards, onAllRevealed, isShuffling = false, isDealin
           </CardDescription>
         </CardHeader>
         <CardContent className="flex justify-center space-x-4">
-          {cards.map((card, index) => (
-            <TarotCard
-              key={index}
-              name={typeof card === "string" ? card : card.name}
-              isRevealed={revealedCards[index]}
-              onFlip={() => handleCardFlip(index)}
-              delay={index * 0.2}
-              cardState={cardStates[index]}
-              isReversed={typeof card !== "string" && !card.upright}
-            />
-          ))}
+          {cards.map((card, index) => {
+            return (
+              <TarotCard
+                key={index}
+                name={card.name}
+                isRevealed={revealedCards[index]}
+                onFlip={() => handleCardFlip(index)}
+                delay={index * 0.2}
+                cardState={cardStates[index]}
+                isReversed={!card.upright}
+              />
+            )
+          })}
         </CardContent>
       </Card>
 

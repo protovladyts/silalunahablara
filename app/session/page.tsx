@@ -8,7 +8,7 @@ import { TarotTable } from "@/components/tarot-table"
 import { ReadingStream } from "@/components/reading-stream"
 import { Upsell } from "@/components/upsell"
 import { ProgressIndicator } from "@/components/progress-indicator"
-import { hasUsedFreeTarot, markFreeTarotUsed } from "@/lib/mocks/mockDb"
+import { APP_CONFIG } from "@/lib/config"
 
 type SessionStep = "intake" | "reask" | "shuffle" | "draw" | "reading" | "upsell"
 
@@ -24,7 +24,7 @@ export default function SessionPage() {
   const [error, setError] = useState("")
   const router = useRouter()
 
-  const MAX_LOOPS = 3
+  const MAX_LOOPS = APP_CONFIG.MAX_TAROT_READINGS // Número total de preguntas (1 inicial + 2 repreguntas)
 
   useEffect(() => {
     const email = localStorage.getItem("userEmail")
@@ -34,6 +34,7 @@ export default function SessionPage() {
     const savedLoopsUsed = localStorage.getItem("loopsUsed")
 
     console.log("[v0] Session page loaded, checking auth state")
+    console.log("[v0] Auth state:", { email, userVerified, savedSessionId, savedStep, savedLoopsUsed })
 
     if (!email || !userVerified) {
       console.log("[v0] No auth found, redirecting to home")
@@ -43,26 +44,39 @@ export default function SessionPage() {
 
     setUserEmail(email)
 
-    // Check if user has already used free tarot
-    if (hasUsedFreeTarot(email)) {
-      console.log("[v0] User already used free tarot, showing upsell")
-      setStep("upsell")
-      return
+    // Verificar si el usuario ya usó su tarot gratuito
+    checkUserTarotUsage(email)
+
+    // Limpiar estado anterior si existe
+    if (savedSessionId) {
+      console.log("[v0] Found old sessionId, clearing localStorage")
+      localStorage.removeItem("sessionId")
+      localStorage.removeItem("sessionStep")
+      localStorage.removeItem("loopsUsed")
     }
 
-    if (savedSessionId && savedStep && savedLoopsUsed) {
-      console.log("[v0] Rehydrating session state")
-      setSessionId(savedSessionId)
-      setStep(savedStep)
-      setLoopsUsed(Number.parseInt(savedLoopsUsed))
-
-      // If user was in middle of session, check if they exceeded loops
-      if (Number.parseInt(savedLoopsUsed) >= MAX_LOOPS) {
-        setStep("upsell")
-        markFreeTarotUsed(email)
-      }
-    }
+    console.log("[v0] Starting fresh session")
   }, [router])
+
+  const checkUserTarotUsage = async (email: string) => {
+    try {
+      const response = await fetch("/api/user/check-tarot-usage", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+      })
+
+      if (response.ok) {
+        const { hasUsedFreeTarot } = await response.json()
+        if (hasUsedFreeTarot) {
+          console.log("[v0] User already used free tarot, showing upsell")
+          setStep("upsell")
+        }
+      }
+    } catch (error) {
+      console.error("[v0] Error checking tarot usage:", error)
+    }
+  }
 
   useEffect(() => {
     if (sessionId) {
@@ -85,7 +99,11 @@ export default function SessionPage() {
     setError("")
     setQuestion(userQuestion)
 
+    console.log("[v0] Frontend - Starting new session with question:", userQuestion)
+
     try {
+      console.log("[v0] Frontend - Calling /api/session/start")
+      
       const startResponse = await fetch("/api/session/start", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -97,8 +115,13 @@ export default function SessionPage() {
       }
 
       const { sessionId: newSessionId } = await startResponse.json()
+      console.log("[v0] Frontend - Got sessionId from start:", newSessionId)
+      
       setSessionId(newSessionId)
 
+      // Ahora hacer shuffle inmediatamente con el sessionId
+      console.log("[v0] Frontend - Calling /api/session/shuffle with sessionId:", newSessionId)
+      
       const shuffleResponse = await fetch("/api/session/shuffle", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -109,31 +132,11 @@ export default function SessionPage() {
         throw new Error("Failed to shuffle")
       }
 
+      console.log("[v0] Frontend - Shuffle successful, setting step to shuffle")
       setStep("shuffle")
-
-      setTimeout(async () => {
-        try {
-          const drawResponse = await fetch("/api/session/draw", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ sessionId: newSessionId }),
-          })
-
-          if (!drawResponse.ok) {
-            throw new Error("Failed to draw cards")
-          }
-
-          const { cards: drawnCards } = await drawResponse.json()
-          setCards(drawnCards)
-          setStep("draw")
-        } catch (error) {
-          console.error("[v0] Error drawing cards:", error)
-          setError("Se cortó. Intentá otra vez.")
-          setStep("intake")
-        }
-      }, 3000)
+      // El draw ahora se maneja automáticamente en el callback onShuffleComplete
     } catch (error) {
-      console.error("[v0] Error starting session:", error)
+      console.error("[v0] Frontend - Error starting session:", error)
       setError("Se cortó. Intentá otra vez.")
     } finally {
       setIsLoading(false)
@@ -149,7 +152,14 @@ export default function SessionPage() {
     setLoopsUsed(newLoopsUsed)
 
     if (newLoopsUsed >= MAX_LOOPS) {
-      markFreeTarotUsed(userEmail)
+      // Marcar tarot como usado cuando se agotan los loops
+      if (userEmail) {
+        fetch("/api/user/mark-tarot-used", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email: userEmail }),
+        }).catch(console.error)
+      }
       setStep("upsell")
       return
     }
@@ -171,11 +181,18 @@ export default function SessionPage() {
 
       const { reading: newReading } = await response.json()
       setReading(newReading)
+      
+      // Después de obtener la lectura, mostrar directamente la lectura
       setStep("reading")
     } catch (error) {
       console.error("[v0] Error getting reading:", error)
       setError("Se cortó. Intentá otra vez.")
     }
+  }
+
+  const handleVideoCallOffer = () => {
+    // Aquí iría la lógica para agendar videollamada
+    alert("Funcionalidad de videollamada en desarrollo. Contactá a silalunahablara@gmail.com")
   }
 
   const handleReask = () => {
@@ -188,7 +205,13 @@ export default function SessionPage() {
 
   const handleFinish = () => {
     if (userEmail) {
-      markFreeTarotUsed(userEmail)
+      // Ahora usamos Prisma para marcar el tarot como usado
+      fetch("/api/user/mark-tarot-used", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: userEmail }),
+      }).catch(console.error)
+      
       localStorage.removeItem("sessionId")
       localStorage.removeItem("sessionStep")
       localStorage.removeItem("loopsUsed")
@@ -224,7 +247,7 @@ export default function SessionPage() {
   }
 
   return (
-    <>
+    <div suppressHydrationWarning>
       {step !== "upsell" && (
         <ProgressIndicator currentStep={getProgressStep()} loopsUsed={loopsUsed} maxLoops={MAX_LOOPS} />
       )}
@@ -245,7 +268,49 @@ export default function SessionPage() {
             )
 
           case "shuffle":
-            return <TarotTable cards={cards} onAllRevealed={handleAllCardsRevealed} isShuffling />
+            return (
+              <TarotTable 
+                cards={cards} 
+                onAllRevealed={handleAllCardsRevealed} 
+                isShuffling 
+                onShuffleComplete={() => {
+                  console.log("[v0] Frontend - onShuffleComplete called")
+                  console.log("[v0] Frontend - Current sessionId:", sessionId)
+                  
+                  // Después de completar el shuffle, hacer el draw automáticamente
+                  if (sessionId) {
+                    console.log("[v0] Frontend - Calling /api/session/draw with sessionId:", sessionId)
+                    
+                    fetch("/api/session/draw", {
+                      method: "POST",
+                      headers: { "Content-Type": "application/json" },
+                      body: JSON.stringify({ sessionId }),
+                    })
+                    .then(response => {
+                      console.log("[v0] Frontend - Draw response status:", response.status)
+                      if (response.ok) {
+                        return response.json()
+                      }
+                      throw new Error("Failed to draw cards")
+                    })
+                    .then(({ cards: drawnCards }) => {
+                      console.log("[v0] Frontend - Draw successful, got cards:", drawnCards)
+                      setCards(drawnCards)
+                      setStep("draw")
+                    })
+                    .catch(error => {
+                      console.error("[v0] Frontend - Error drawing cards:", error)
+                      setError("Error al obtener las cartas. Intentá otra vez.")
+                      setStep("intake")
+                    })
+                  } else {
+                    console.error("[v0] Frontend - No sessionId available for draw")
+                    setError("Error de sesión. Intentá otra vez.")
+                    setStep("intake")
+                  }
+                }}
+              />
+            )
 
           case "draw":
             return <TarotTable cards={cards} onAllRevealed={handleAllCardsRevealed} />
@@ -258,6 +323,8 @@ export default function SessionPage() {
                 maxLoops={MAX_LOOPS}
                 onReask={handleReask}
                 onFinish={handleFinish}
+                onVideoCallOffer={handleVideoCallOffer}
+                onUpsell={() => setStep("upsell")}
               />
             )
 
@@ -268,6 +335,6 @@ export default function SessionPage() {
             return null
         }
       })()}
-    </>
+    </div>
   )
 }
