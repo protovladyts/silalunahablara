@@ -101,3 +101,110 @@
     text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.4);
   }
 }
+
+/* Clases de gradiente para las cartas de tarot */
+@layer utilities {
+  .tarot-gradient-yellow-orange {
+    background: linear-gradient(to bottom right, #fbbf24, #fb923c);
+  }
+  
+  .tarot-gradient-amber-orange {
+    background: linear-gradient(to bottom right, #b45309, #ea580c);
+  }
+  
+  .tarot-gradient-yellow-amber {
+    background: linear-gradient(to bottom right, #fbbf24, #f59e0b);
+  }
+  
+  .tarot-gradient-green-emerald {
+    background: linear-gradient(to bottom right, #16a34a, #10b981);
+  }
+  
+  .tarot-gradient-slate-blue {
+    background: linear-gradient(to bottom right, #475569, #2563eb);
+  }
+  
+  .tarot-gradient-purple-indigo {
+    background: linear-gradient(to bottom right, #9333ea, #4f46e5);
+  }
+  
+  .tarot-gradient-blue-indigo {
+    background: linear-gradient(to bottom right, #1e40af, #3730a3);
+  }
+  
+  .tarot-gradient-pink-rose {
+    background: linear-gradient(to bottom right, #ec4899, #f43f5e);
+  }
+  
+  .tarot-gradient-red-rose {
+    background: linear-gradient(to bottom right, #b91c1c, #be123c);
+  }
+  
+  .tarot-gradient-purple-violet {
+    background: linear-gradient(to bottom right, #7c3aed, #7c2d12);
+  }
+  
+  .tarot-gradient-pink-red {
+    background: linear-gradient(to bottom right, #f472b6, #f87171);
+  }
+  
+  .tarot-gradient-blue-cyan {
+    background: linear-gradient(to bottom right, #2563eb, #0891b2);
+  }
+  
+  .tarot-gradient-orange-red {
+    background: linear-gradient(to bottom right, #f97316, #ef4444);
+  }
+  
+  .tarot-gradient-gray-slate {
+    background: linear-gradient(to bottom right, #4b5563, #475569);
+  }
+  
+  .tarot-gradient-yellow-orange-500 {
+    background: linear-gradient(to bottom right, #eab308, #f97316);
+  }
+  
+  .tarot-gradient-green-emerald-500 {
+    background: linear-gradient(to bottom right, #22c55e, #10b981);
+  }
+  
+  .tarot-gradient-blue-indigo-500 {
+    background: linear-gradient(to bottom right, #3b82f6, #6366f1);
+  }
+  
+  .tarot-gradient-gray-black {
+    background: linear-gradient(to bottom right, #1f2937, #000000);
+  }
+  
+  .tarot-gradient-blue-cyan-400 {
+    background: linear-gradient(to bottom right, #60a5fa, #22d3ee);
+  }
+  
+  .tarot-gradient-red-black {
+    background: linear-gradient(to bottom right, #991b1b, #000000);
+  }
+  
+  .tarot-gradient-orange-red-600 {
+    background: linear-gradient(to bottom right, #ea580c, #dc2626);
+  }
+  
+  .tarot-gradient-blue-cyan-300 {
+    background: linear-gradient(to bottom right, #93c5fd, #67e8f9);
+  }
+  
+  .tarot-gradient-indigo-purple-400 {
+    background: linear-gradient(to bottom right, #818cf8, #a78bfa);
+  }
+  
+  .tarot-gradient-yellow-orange-300 {
+    background: linear-gradient(to bottom right, #fde047, #fdba74);
+  }
+  
+  .tarot-gradient-white-gray {
+    background: linear-gradient(to bottom right, #ffffff, #e5e7eb);
+  }
+  
+  .tarot-gradient-green-emerald-400 {
+    background: linear-gradient(to bottom right, #4ade80, #34d399);
+  }
+}

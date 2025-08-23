@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from "react"
 import { motion } from "framer-motion"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import Link from "next/link"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { APP_CONFIG } from "@/lib/config"
 import { ClientOnly } from "./client-only"
@@ -12,6 +13,7 @@ import { getTarotReadingMessages } from "@/lib/tarot-utils"
 
 interface ReadingStreamProps {
   reading: string
+  question: string
   loopsUsed: number
   maxLoops?: number
   cards?: Array<{ name: string; upright: boolean }>
@@ -21,7 +23,7 @@ interface ReadingStreamProps {
   onUpsell: () => void
 }
 
-function ReadingStreamContent({ reading, loopsUsed, maxLoops = 3, cards = [], onReask, onFinish, onVideoCallOffer, onUpsell }: ReadingStreamProps) {
+function ReadingStreamContent({ reading, question, loopsUsed, maxLoops = 3, cards = [], onReask, onFinish, onVideoCallOffer, onUpsell }: ReadingStreamProps) {
   const [displayedText, setDisplayedText] = useState("")
   const [isComplete, setIsComplete] = useState(false)
   const [showVideoOffer, setShowVideoOffer] = useState(false)
@@ -111,6 +113,9 @@ function ReadingStreamContent({ reading, loopsUsed, maxLoops = 3, cards = [], on
                 ✨
               </motion.div>
               <CardTitle className="text-xl text-violet-100">Tu lectura de tarot</CardTitle>
+            <CardDescription className="text-violet-300 text-lg mt-2">
+              "{question}"
+            </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="prose prose-invert max-w-none">
@@ -129,6 +134,38 @@ function ReadingStreamContent({ reading, loopsUsed, maxLoops = 3, cards = [], on
               {isComplete && (
                 <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-4 mt-8">
                   <div className="text-center text-violet-300 text-sm">Lectura completada ✨</div>
+                  
+                  {/* Botones de compartir en redes sociales */}
+                  <motion.div 
+                    initial={{ opacity: 0, scale: 0.95 }} 
+                    animate={{ opacity: 1, scale: 1 }}
+                    className="bg-slate-700/50 border border-violet-400/30 rounded-lg p-4 text-center"
+                  >
+                    <div className="text-violet-200 text-sm mb-3">
+                      <p className="mb-1">✨ Compartí tu lectura</p>
+                      <p className="text-violet-300">Ayudá a otros a encontrar su camino</p>
+                    </div>
+                    <div className="flex gap-3 justify-center">
+                      <Button
+                        onClick={() => console.log('Compartir en X')}
+                        className="bg-black hover:bg-gray-800 text-white font-semibold py-2 px-4"
+                      >
+                        𝕏 X
+                      </Button>
+                      <Button
+                        onClick={() => console.log('Compartir en Instagram')}
+                        className="bg-gradient-to-r from-purple-600 via-pink-600 to-orange-500 hover:from-purple-700 hover:via-pink-700 hover:to-orange-600 text-white font-semibold py-2 px-4"
+                      >
+                        📸 Instagram
+                      </Button>
+                      <Button
+                        onClick={() => console.log('Compartir en WhatsApp')}
+                        className="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4"
+                      >
+                        💬 WhatsApp
+                      </Button>
+                    </div>
+                  </motion.div>
                   
                   {/* Oferta de videollamada */}
                   {showVideoOffer && (
@@ -167,7 +204,16 @@ function ReadingStreamContent({ reading, loopsUsed, maxLoops = 3, cards = [], on
                         💰 {APP_CONFIG.ADDITIONAL_READINGS_COUNT} Preguntas más por ${APP_CONFIG.ADDITIONAL_READINGS_PRICE} USD
                       </Button>
                     )}
-
+                  </div>
+                  
+                  {/* Enlace a Términos y Condiciones */}
+                  <div className="text-center pt-4">
+                    <Link 
+                      href="/tyc" 
+                      className="text-xs text-violet-300/70 hover:text-violet-300 underline"
+                    >
+                      Términos y condiciones legales
+                    </Link>
                   </div>
                 </motion.div>
               )}
@@ -179,7 +225,7 @@ function ReadingStreamContent({ reading, loopsUsed, maxLoops = 3, cards = [], on
   )
 }
 
-function ReadingStreamFallback({ reading }: ReadingStreamProps) {
+function ReadingStreamFallback({ reading, question }: ReadingStreamProps) {
   return (
     <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-slate-900 via-purple-900/20 to-slate-900 relative overflow-hidden">
       {/* Estrellas estáticas para el fallback */}
@@ -201,6 +247,9 @@ function ReadingStreamFallback({ reading }: ReadingStreamProps) {
         <CardHeader className="text-center">
           <div className="text-4xl mb-2">✨</div>
           <CardTitle className="text-xl text-violet-100">Tu lectura de tarot</CardTitle>
+          <CardDescription className="text-violet-300 text-lg mt-2">
+            "{question}"
+          </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="prose prose-invert max-w-none">

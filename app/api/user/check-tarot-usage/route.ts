@@ -20,10 +20,14 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ hasUsedFreeTarot: false })
     }
 
-    console.log(`[v0] User ${user.id} has used free tarot: ${user.hasFreeTarot}`)
+    // hasFreeTarot: true = Tiene créditos disponibles, hasFreeTarot: false = No tiene créditos
+    // hasUsedFreeTarot: true = Ya usó todos sus créditos, hasUsedFreeTarot: false = Aún tiene créditos
+    const hasUsedFreeTarot = !user.hasFreeTarot
+    
+    console.log(`[v0] User ${user.id} - hasFreeTarot: ${user.hasFreeTarot}, hasUsedFreeTarot: ${hasUsedFreeTarot}`)
 
     return NextResponse.json({
-      hasUsedFreeTarot: user.hasFreeTarot
+      hasUsedFreeTarot
     })
   } catch (error) {
     console.error("[v0] Error checking tarot usage:", error)

@@ -34,9 +34,7 @@ export function ReaskForm({ onSubmit, isLoading = false, loopsUsed, maxLoops }: 
           <CardHeader className="text-center space-y-3">
             <div className="text-4xl">🔄</div>
             <CardTitle className="text-xl text-card-foreground">¿Qué te gustaría aclarar?</CardTitle>
-            <div className="text-sm text-muted-foreground">
-              Te quedan {remainingQuestions} pregunta{remainingQuestions !== 1 ? "s" : ""} gratis
-            </div>
+            {/* Información de consultas restantes removida - ya se muestra en el ProgressIndicator */}
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">

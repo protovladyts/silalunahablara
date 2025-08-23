@@ -3,6 +3,7 @@
 import type React from "react"
 
 import { useState } from "react"
+import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -61,6 +62,23 @@ export function EmailForm({ onSubmit, isLoading = false }: EmailFormProps) {
               {isLoading ? "Enviando..." : "Comenzar sesión"}
             </Button>
           </form>
+          
+          {/* Enlaces adicionales */}
+          <div className="text-center pt-4 space-y-2">
+            <Link 
+              href="/tyc" 
+              className="text-xs text-muted-foreground hover:text-foreground underline block"
+            >
+              Términos y condiciones legales
+            </Link>
+            
+            <Link 
+              href="/deck" 
+              className="text-xs text-muted-foreground hover:text-foreground underline block"
+            >
+              Ver mazo completo del tarot
+            </Link>
+          </div>
         </CardContent>
       </Card>
     </div>

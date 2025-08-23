@@ -3,6 +3,7 @@
 import type React from "react"
 
 import { useState } from "react"
+import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -62,6 +63,16 @@ export function OtpForm({ email, onSubmit, onResend, isLoading = false }: OtpFor
           >
             Reenviar código
           </Button>
+          
+          {/* Enlace a Términos y Condiciones */}
+          <div className="text-center pt-4">
+            <Link 
+              href="/tyc" 
+              className="text-xs text-muted-foreground hover:text-foreground underline"
+            >
+              Términos y condiciones legales
+            </Link>
+          </div>
         </CardContent>
       </Card>
     </div>

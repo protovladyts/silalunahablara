@@ -79,12 +79,7 @@ function ProgressIndicatorContent({ currentStep, loopsUsed = 0, maxLoops = 3 }: 
               ))}
             </div>
 
-            {/* Loop counter */}
-            {maxLoops > 0 && (
-              <div className="text-xs text-violet-300 text-center">
-                {messages.progressMessage}
-              </div>
-            )}
+            {/* Loop counter - REMOVIDO: era redundante con el contador de consultas restantes */}
           </div>
         </Card>
       </div>
@@ -154,11 +149,7 @@ function ProgressIndicatorFallback({ currentStep, loopsUsed = 0, maxLoops = 3 }:
                 </div>
               ))}
             </div>
-            {maxLoops > 0 && (
-              <div className="text-xs text-violet-300 text-center">
-                {messages.progressMessage}
-              </div>
-            )}
+            {/* Loop counter - REMOVIDO: era redundante con el contador de consultas restantes */}
           </div>
         </Card>
       </div>

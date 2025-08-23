@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import { motion } from "framer-motion"
+import { getCardColor, getCardSymbol } from "@/lib/tarot-cards-config"
 
 interface TarotCardProps {
   name: string
@@ -22,6 +23,10 @@ export function TarotCard({
 }: TarotCardProps) {
   const [isHovered, setIsHovered] = useState(false)
 
+  // Obtener el color y símbolo únicos de la carta
+  const cardColor = getCardColor(name)
+  const cardSymbol = getCardSymbol(name)
+
   // Si la carta está oculta, no renderizarla
   if (cardState === "hidden") {
     return (
@@ -38,7 +43,7 @@ export function TarotCard({
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 50, rotateZ: -5 + Math.random() * 10 }}
+      initial={{ opacity: 0, y: 50, rotateZ: -5 }}
       animate={{
         opacity: 1,
         y: 0,
@@ -130,24 +135,25 @@ export function TarotCard({
             <div className="absolute bottom-2 right-2 w-2 h-2 border border-violet-400/50 rotate-45" />
           </div>
         ) : (
-          /* Reverso de la carta (con nombre y símbolo) */
+          /* Reverso de la carta (con nombre y símbolo únicos) */
           <div 
-            className="absolute inset-0 bg-gradient-to-br from-slate-900 to-slate-800 border-2 border-violet-400/50 p-2 flex flex-col items-center justify-center text-center rounded-lg"
+            className="absolute inset-0 border-2 border-violet-400/50 p-2 flex flex-col items-center justify-center text-center rounded-lg"
             style={{
               transform: "rotateY(180deg)", // Compensar la rotación del contenedor padre
-              transformOrigin: "center center"
+              transformOrigin: "center center",
+              ...(cardColor.startsWith('background:') ? { background: cardColor.replace('background: ', '') } : {})
             }}
           >
-            {/* Card symbol */}
+            {/* Card symbol único */}
             <div className="text-2xl md:text-3xl mb-2 transition-transform duration-300">
-              ✨
+              {cardSymbol}
             </div>
 
             {/* Card name */}
-            <p className="text-[10px] md:text-xs font-bold text-violet-100 leading-tight mb-1">{name}</p>
+            <p className="text-[10px] md:text-xs font-bold text-white leading-tight mb-1">{name}</p>
 
             {/* Decorative border */}
-            <div className="absolute inset-1 border border-violet-400/30 rounded pointer-events-none" />
+            <div className="absolute inset-1 border border-white/30 rounded pointer-events-none" />
           </div>
         )}
       </motion.div>

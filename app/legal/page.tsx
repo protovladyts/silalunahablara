@@ -2,6 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import { StarsBackground } from "@/components/stars-background"
+import { FloatingVideoCallButton } from "@/components/floating-video-call-button"
 
 export default function LegalPage() {
   return (
@@ -38,10 +39,19 @@ export default function LegalPage() {
           </CardContent>
         </Card>
 
-        <div className="text-center">
+        <div className="text-center space-y-4">
           <Button asChild variant="outline" className="border-border text-foreground bg-transparent">
             <Link href="/">Volver al inicio</Link>
           </Button>
+          
+          <div>
+            <Link 
+              href="/tyc" 
+              className="text-sm text-violet-400 hover:text-violet-300 underline"
+            >
+              Ver Términos y Condiciones de Uso completos
+            </Link>
+          </div>
         </div>
       </div>
     </div>

@@ -24,12 +24,26 @@ export async function POST(request: NextRequest) {
 
     if (!user) {
       user = await prisma.user.create({
-        data: { email }
+        data: { 
+          email,
+          hasFreeTarot: true // Usuarios nuevos tienen créditos gratuitos
+        }
       })
-      console.log(`[v0] Created new user: ${user.id}`)
+      console.log(`[v0] Created new user: ${user.id} with hasFreeTarot: true`)
     }
 
     // Verificar si el usuario ya usó todas sus consultas gratuitas
+    // hasFreeTarot: false = No tiene créditos, hasFreeTarot: true = Sí tiene créditos
+    if (!user.hasFreeTarot) {
+      console.log(`[v0] User ${email} has already used their free tarot readings (hasFreeTarot: false)`)
+      return NextResponse.json({ 
+        error: "Ya has usado todas tus consultas gratuitas de tarot",
+        maxReadings: API_CONFIG.MAX_TAROT_READINGS,
+        hasFreeTarot: false
+      }, { status: 403 })
+    }
+
+    // Contar sesiones existentes para determinar loopsUsed
     const existingSessions = await prisma.tarotSession.count({
       where: { 
         userId: user.id,
@@ -37,14 +51,7 @@ export async function POST(request: NextRequest) {
       }
     })
 
-    if (existingSessions >= API_CONFIG.MAX_TAROT_READINGS) {
-      console.log(`[v0] User ${email} has exceeded maximum tarot readings: ${existingSessions}/${API_CONFIG.MAX_TAROT_READINGS}`)
-      return NextResponse.json({ 
-        error: "Ya has usado todas tus consultas gratuitas de tarot",
-        maxReadings: API_CONFIG.MAX_TAROT_READINGS,
-        currentReadings: existingSessions
-      }, { status: 403 })
-    }
+    console.log(`[v0] User ${email} has ${existingSessions}/${API_CONFIG.MAX_TAROT_READINGS} completed sessions`)
 
     // Crear sesión de tarot
     const session = await prisma.tarotSession.create({

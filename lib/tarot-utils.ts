@@ -18,7 +18,14 @@ export interface TarotReadingState {
 export function calculateTarotReadingState(loopsUsed: number): TarotReadingState {
   const totalReadings = SHARED_CONFIG.MAX_TAROT_READINGS
   const currentReading = loopsUsed + 1
-  const remainingReadings = totalReadings - currentReading
+  
+  // Las consultas restantes se basan en las consultas completadas, no en la actual
+  // loopsUsed = 0 (ninguna consulta completada) → 3 restantes
+  // loopsUsed = 1 (una consulta completada) → 2 restantes  
+  // loopsUsed = 2 (dos consultas completadas) → 1 restante
+  // loopsUsed = 3 (tres consultas completadas) → 0 restantes
+  const remainingReadings = totalReadings - loopsUsed
+  
   const isFirstReading = loopsUsed === 0
   const isLastFreeReading = currentReading === totalReadings
   const hasMoreFreeReadings = remainingReadings > 0
@@ -53,12 +60,8 @@ export function getTarotReadingMessages(loopsUsed: number) {
       ? `Repreguntar (${state.remainingReadings} restante${state.remainingReadings !== 1 ? 's' : ''})`
       : "Sin más repreguntas",
     
-    // Para mensajes informativos
-    infoMessage: state.isFirstReading 
-      ? "Primera consulta gratuita"
-      : state.hasMoreFreeReadings
-      ? `Te quedan ${state.remainingReadings} consulta${state.remainingReadings !== 1 ? 's' : ''} gratuita${state.remainingReadings !== 1 ? 's' : ''}`
-      : "Has usado todas tus consultas gratuitas",
+    // Para mensajes informativos - REMOVIDO: solo se muestra en el ProgressIndicator
+    infoMessage: "",
     
     // Para validaciones
     canReask: state.hasMoreFreeReadings

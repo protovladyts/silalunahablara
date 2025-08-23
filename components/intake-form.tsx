@@ -3,6 +3,7 @@
 import type React from "react"
 
 import { useState } from "react"
+import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -131,6 +132,16 @@ export function IntakeForm({ onSubmit, isLoading = false }: IntakeFormProps) {
             </div>
             <p className="text-xs text-muted-foreground text-center">{question.length}/200 caracteres</p>
           </form>
+          
+          {/* Enlace a Términos y Condiciones */}
+          <div className="text-center pt-4">
+            <Link 
+              href="/tyc" 
+              className="text-xs text-muted-foreground hover:text-foreground underline"
+            >
+              Términos y condiciones legales
+            </Link>
+          </div>
         </CardContent>
       </Card>
     </div>

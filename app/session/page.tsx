@@ -10,6 +10,8 @@ import { Upsell } from "@/components/upsell"
 import { ProgressIndicator } from "@/components/progress-indicator"
 import { APP_CONFIG } from "@/lib/config"
 import { StarsBackground } from "@/components/stars-background"
+import { FloatingVideoCallButton } from "@/components/floating-video-call-button"
+import Link from "next/link"
 
 type SessionStep = "intake" | "reask" | "shuffle" | "draw" | "reading" | "upsell"
 
@@ -323,6 +325,7 @@ export default function SessionPage() {
             return (
               <ReadingStream
                 reading={reading}
+                question={question}
                 loopsUsed={loopsUsed}
                 maxLoops={MAX_LOOPS}
                 cards={cards}
@@ -340,6 +343,9 @@ export default function SessionPage() {
             return null
         }
       })()}
+
+      {/* Botón de videollamada siempre visible, excepto en lectura */}
+      <FloatingVideoCallButton currentStep={step} />
     </div>
   )
 }

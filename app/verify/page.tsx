@@ -4,6 +4,8 @@ import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { OtpForm } from "@/components/otp-form"
 import { StarsBackground } from "@/components/stars-background"
+import { FloatingVideoCallButton } from "@/components/floating-video-call-button"
+import Link from "next/link"
 
 export default function VerifyPage() {
   const [email, setEmail] = useState("")
@@ -84,13 +86,14 @@ export default function VerifyPage() {
     return null
   }
 
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900/20 to-slate-900 relative overflow-hidden">
-      <StarsBackground animated={true} />
-      <OtpForm email={email} onSubmit={handleOtpSubmit} onResend={handleResend} isLoading={isLoading} />
-      {error && (
-        <div className="fixed bottom-4 left-4 right-4 bg-red-500 text-white p-3 rounded-lg text-center z-50">{error}</div>
-      )}
-    </div>
-  )
+              return (
+              <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900/20 to-slate-900 relative overflow-hidden">
+                <StarsBackground animated={true} />
+                <OtpForm email={email} onSubmit={handleOtpSubmit} onResend={handleResend} isLoading={isLoading} />
+                {error && (
+                  <div className="fixed bottom-4 left-4 right-4 bg-red-500 text-white p-3 rounded-lg text-center z-50">{error}</div>
+                )}
+                <FloatingVideoCallButton currentStep="verify" />
+              </div>
+            )
 }

@@ -38,10 +38,46 @@ export async function POST(request: NextRequest) {
       update: { name: name.trim() }, // Actualizar nombre si el usuario ya existe
       create: { 
         email: email.trim(),
-        name: name.trim()
+        name: name.trim(),
+        hasFreeTarot: true // Usuarios nuevos tienen créditos gratuitos
       }
     })
-    console.log("[v0] User processed:", { userId: user.id, email: user.email, name: user.name })
+    console.log("[v0] User processed:", { userId: user.id, email: user.email, name: user.name, hasFreeTarot: user.hasFreeTarot })
+
+    // DEBUGGING: Verificar cuántas sesiones completadas tiene este usuario
+    const completedSessions = await prisma.tarotSession.count({
+      where: { 
+        userId: user.id,
+        status: "READING"
+      }
+    })
+    console.log(`[v0] DEBUGGING OTP - User ${email} has ${completedSessions} completed sessions`)
+    console.log(`[v0] DEBUGGING OTP - User hasFreeTarot: ${user.hasFreeTarot}`)
+    
+    // Verificar si el usuario ya usó todos sus créditos gratuitos
+    // hasFreeTarot: false = No tiene créditos, hasFreeTarot: true = Sí tiene créditos
+    if (!user.hasFreeTarot) {
+      console.log(`[v0] User ${email} has no free credits (hasFreeTarot: false), showing paywall`)
+      return NextResponse.json({
+        error: "NO_FREE_CREDITS",
+        message: "Ya has usado todas tus consultas gratuitas de tarot",
+        hasFreeTarot: false,
+        options: {
+          additionalReadings: {
+            price: 1,
+            count: 3,
+            description: "3 preguntas más por $1 USD"
+          },
+          videoCall: {
+            price: 15,
+            duration: "30 minutos",
+            description: "Lectura personalizada por videollamada"
+          }
+        }
+      }, { status: 402 }) // 402 Payment Required
+    }
+
+    console.log(`[v0] User ${email} has free credits (hasFreeTarot: true), proceeding with OTP`)
 
     // Generar código OTP (mock por ahora)
     const otpCode = "123456"
