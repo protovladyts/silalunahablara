@@ -54,7 +54,7 @@ export default function DeckPage() {
           {cards.map((card, index) => (
             <div key={index} className="flex flex-col items-center space-y-2">
               <TarotCard
-                name={card.name}
+                name={card.key}
                 isRevealed={true}
                 onFlip={() => {}}
                 delay={0}

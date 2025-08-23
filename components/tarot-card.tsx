@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import { motion } from "framer-motion"
-import { getCardColor, getCardSymbol } from "@/lib/tarot-cards-config"
+import { getCardColor, getCardSymbol, getCardTextColor, getCardDisplayName } from "@/lib/tarot-cards-config"
 
 interface TarotCardProps {
   name: string
@@ -26,6 +26,11 @@ export function TarotCard({
   // Obtener el color y símbolo únicos de la carta
   const cardColor = getCardColor(name)
   const cardSymbol = getCardSymbol(name)
+  const cardTextColor = getCardTextColor(name)
+  
+  // Determinar si es un arcano mayor para aplicar la fuente apropiada
+  const isMajorArcana = name.includes("El ") || name.includes("La ") || name.includes("Los ")
+  const fontClass = isMajorArcana ? "tarot-card-font-major" : "tarot-card-font"
 
   // Si la carta está oculta, no renderizarla
   if (cardState === "hidden") {
@@ -150,7 +155,7 @@ export function TarotCard({
             </div>
 
             {/* Card name */}
-            <p className="text-[10px] md:text-xs font-bold text-white leading-tight mb-1">{name}</p>
+            <p className={`text-[10px] md:text-xs font-bold leading-tight mb-1 ${cardTextColor} ${fontClass}`}>{getCardDisplayName(name)}</p>
 
             {/* Decorative border */}
             <div className="absolute inset-1 border border-white/30 rounded pointer-events-none" />

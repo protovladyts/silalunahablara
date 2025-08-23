@@ -1,108 +1,110 @@
 // Configuración de colores y símbolos para las cartas de tarot
 export interface TarotCardConfig {
-  name: string
+  key: string // Clave única para búsqueda (nombres originales)
+  name: string // Nombre de display (lo que se muestra al usuario)
   suit: "cups" | "coins" | "wands" | "swords" | "major"
   color: string
+  textColor: string
   symbol: string
   description: string
 }
 
 export const TAROT_CARDS_CONFIG: TarotCardConfig[] = [
   // PALO DE COPAS (Cobrizo)
-  { name: "As de Copas", suit: "cups", color: "background: linear-gradient(to bottom right, #b45309, #ea580c)", symbol: "🏺", description: "Cáliz sagrado" },
-  { name: "Dos de Copas", suit: "cups", color: "background: linear-gradient(to bottom right, #b45309, #ea580c)", symbol: "🏺", description: "Dos corazones unidos" },
-  { name: "Tres de Copas", suit: "cups", color: "background: linear-gradient(to bottom right, #b45309, #ea580c)", symbol: "🏺", description: "Celebración" },
-  { name: "Cuatro de Copas", suit: "cups", color: "background: linear-gradient(to bottom right, #b45309, #ea580c)", symbol: "🏺", description: "Meditación" },
-  { name: "Cinco de Copas", suit: "cups", color: "background: linear-gradient(to bottom right, #b45309, #ea580c)", symbol: "🏺", description: "Pérdida" },
-  { name: "Seis de Copas", suit: "cups", color: "background: linear-gradient(to bottom right, #b45309, #ea580c)", symbol: "🏺", description: "Nostalgia" },
-  { name: "Siete de Copas", suit: "cups", color: "background: linear-gradient(to bottom right, #b45309, #ea580c)", symbol: "🏺", description: "Opciones" },
-  { name: "Ocho de Copas", suit: "cups", color: "background: linear-gradient(to bottom right, #b45309, #ea580c)", symbol: "🏺", description: "Partida" },
-  { name: "Nueve de Copas", suit: "cups", color: "background: linear-gradient(to bottom right, #b45309, #ea580c)", symbol: "🏺", description: "Satisfacción" },
-  { name: "Diez de Copas", suit: "cups", color: "background: linear-gradient(to bottom right, #b45309, #ea580c)", symbol: "🏺", description: "Familia" },
-  { name: "Paje de Copas", suit: "cups", color: "background: linear-gradient(to bottom right, #b45309, #ea580c)", symbol: "🧒🏺", description: "Mensajero" },
-  { name: "Caballero de Copas", suit: "cups", color: "background: linear-gradient(to bottom right, #b45309, #ea580c)", symbol: "🐎🏺", description: "Romántico" },
-  { name: "Reina de Copas", suit: "cups", color: "background: linear-gradient(to bottom right, #b45309, #ea580c)", symbol: "👸🏺", description: "Intuición" },
-  { name: "Rey de Copas", suit: "cups", color: "background: linear-gradient(to bottom right, #b45309, #ea580c)", symbol: "🤴🏺", description: "Sabiduría" },
+  { key: "As de Copas", name: "As de Copas", suit: "cups", color: "background: linear-gradient(to bottom right, #b45309, #ea580c)", textColor: "text-white", symbol: "🏺", description: "Cáliz sagrado" },
+  { key: "Dos de Copas", name: "2", suit: "cups", color: "background: linear-gradient(to bottom right, #b45309, #ea580c)", textColor: "text-white", symbol: "🏺", description: "Dos corazones unidos" },
+  { key: "Tres de Copas", name: "3", suit: "cups", color: "background: linear-gradient(to bottom right, #b45309, #ea580c)", textColor: "text-white", symbol: "🏺", description: "Celebración" },
+  { key: "Cuatro de Copas", name: "4", suit: "cups", color: "background: linear-gradient(to bottom right, #b45309, #ea580c)", textColor: "text-white", symbol: "🏺", description: "Meditación" },
+  { key: "Cinco de Copas", name: "5", suit: "cups", color: "background: linear-gradient(to bottom right, #b45309, #ea580c)", textColor: "text-white", symbol: "🏺", description: "Pérdida" },
+  { key: "Seis de Copas", name: "6", suit: "cups", color: "background: linear-gradient(to bottom right, #b45309, #ea580c)", textColor: "text-white", symbol: "🏺", description: "Nostalgia" },
+  { key: "Siete de Copas", name: "7", suit: "cups", color: "background: linear-gradient(to bottom right, #b45309, #ea580c)", textColor: "text-white", symbol: "🏺", description: "Opciones" },
+  { key: "Ocho de Copas", name: "8", suit: "cups", color: "background: linear-gradient(to bottom right, #b45309, #ea580c)", textColor: "text-white", symbol: "🏺", description: "Partida" },
+  { key: "Nueve de Copas", name: "9", suit: "cups", color: "background: linear-gradient(to bottom right, #b45309, #ea580c)", textColor: "text-white", symbol: "🏺", description: "Satisfacción" },
+  { key: "Diez de Copas", name: "10", suit: "cups", color: "background: linear-gradient(to bottom right, #b45309, #ea580c)", textColor: "text-white", symbol: "🏺", description: "Familia" },
+  { key: "Paje de Copas", name: "Paje de Copas", suit: "cups", color: "background: linear-gradient(to bottom right, #b45309, #ea580c)", textColor: "text-white", symbol: "🧒🏺", description: "Mensajero" },
+  { key: "Caballero de Copas", name: "Caballero de Copas", suit: "cups", color: "background: linear-gradient(to bottom right, #b45309, #ea580c)", textColor: "text-white", symbol: "🐎🏺", description: "Romántico" },
+  { key: "Reina de Copas", name: "Reina de Copas", suit: "cups", color: "background: linear-gradient(to bottom right, #b45309, #ea580c)", textColor: "text-white", symbol: "👸🏺", description: "Intuición" },
+  { key: "Rey de Copas", name: "Rey de Copas", suit: "cups", color: "background: linear-gradient(to bottom right, #b45309, #ea580c)", textColor: "text-white", symbol: "🤴🏺", description: "Sabiduría" },
 
   // PALO DE OROS (Dorado)
-  { name: "As de Oros", suit: "coins", color: "background: linear-gradient(to bottom right, #fbbf24, #f59e0b)", symbol: "🟡", description: "Moneda dorada" },
-  { name: "Dos de Oros", suit: "coins", color: "background: linear-gradient(to bottom right, #fbbf24, #f59e0b)", symbol: "🟡", description: "Equilibrio" },
-  { name: "Tres de Oros", suit: "coins", color: "background: linear-gradient(to bottom right, #fbbf24, #f59e0b)", symbol: "🟡", description: "Construcción" },
-  { name: "Cuatro de Oros", suit: "coins", color: "background: linear-gradient(to bottom right, #fbbf24, #f59e0b)", symbol: "🟡", description: "Ahorro" },
-  { name: "Cinco de Oros", suit: "coins", color: "background: linear-gradient(to bottom right, #fbbf24, #f59e0b)", symbol: "🟡", description: "Pobreza" },
-  { name: "Seis de Oros", suit: "coins", color: "background: linear-gradient(to bottom right, #fbbf24, #f59e0b)", symbol: "🟡", description: "Generosidad" },
-  { name: "Siete de Oros", suit: "coins", color: "background: linear-gradient(to bottom right, #fbbf24, #f59e0b)", symbol: "🟡", description: "Crecimiento" },
-  { name: "Ocho de Oros", suit: "coins", color: "background: linear-gradient(to bottom right, #fbbf24, #f59e0b)", symbol: "🟡", description: "Aprendizaje" },
-  { name: "Nueve de Oros", suit: "coins", color: "background: linear-gradient(to bottom right, #fbbf24, #f59e0b)", symbol: "🟡", description: "Lujo" },
-  { name: "Diez de Oros", suit: "coins", color: "background: linear-gradient(to bottom right, #fbbf24, #f59e0b)", symbol: "🟡", description: "Legado" },
-  { name: "Paje de Oros", suit: "coins", color: "background: linear-gradient(to bottom right, #fbbf24, #f59e0b)", symbol: "🧒🟡", description: "Estudiante" },
-  { name: "Caballero de Oros", suit: "coins", color: "background: linear-gradient(to bottom right, #fbbf24, #f59e0b)", symbol: "🐎🟡", description: "Ambicioso" },
-  { name: "Reina de Oros", suit: "coins", color: "background: linear-gradient(to bottom right, #fbbf24, #f59e0b)", symbol: "👸🟡", description: "Práctica" },
-  { name: "Rey de Oros", suit: "coins", color: "background: linear-gradient(to bottom right, #fbbf24, #f59e0b)", symbol: "🤴🟡", description: "Éxito" },
+  { key: "As de Oros", name: "As de Oros", suit: "coins", color: "background: linear-gradient(to bottom right, #fbbf24, #f59e0b)", textColor: "text-slate-800", symbol: "🟡", description: "Moneda dorada" },
+  { key: "Dos de Oros", name: "2", suit: "coins", color: "background: linear-gradient(to bottom right, #fbbf24, #f59e0b)", textColor: "text-slate-800", symbol: "🟡", description: "Equilibrio" },
+  { key: "Tres de Oros", name: "3", suit: "coins", color: "background: linear-gradient(to bottom right, #fbbf24, #f59e0b)", textColor: "text-slate-800", symbol: "🟡", description: "Construcción" },
+  { key: "Cuatro de Oros", name: "4", suit: "coins", color: "background: linear-gradient(to bottom right, #fbbf24, #f59e0b)", textColor: "text-slate-800", symbol: "🟡", description: "Ahorro" },
+  { key: "Cinco de Oros", name: "5", suit: "coins", color: "background: linear-gradient(to bottom right, #fbbf24, #f59e0b)", textColor: "text-slate-800", symbol: "🟡", description: "Pobreza" },
+  { key: "Seis de Oros", name: "6", suit: "coins", color: "background: linear-gradient(to bottom right, #fbbf24, #f59e0b)", textColor: "text-slate-800", symbol: "🟡", description: "Generosidad" },
+  { key: "Siete de Oros", name: "7", suit: "coins", color: "background: linear-gradient(to bottom right, #fbbf24, #f59e0b)", textColor: "text-slate-800", symbol: "🟡", description: "Crecimiento" },
+  { key: "Ocho de Oros", name: "8", suit: "coins", color: "background: linear-gradient(to bottom right, #fbbf24, #f59e0b)", textColor: "text-slate-800", symbol: "🟡", description: "Aprendizaje" },
+  { key: "Nueve de Oros", name: "9", suit: "coins", color: "background: linear-gradient(to bottom right, #fbbf24, #f59e0b)", textColor: "text-slate-800", symbol: "🟡", description: "Lujo" },
+  { key: "Diez de Oros", name: "10", suit: "coins", color: "background: linear-gradient(to bottom right, #fbbf24, #f59e0b)", textColor: "text-slate-800", symbol: "🟡", description: "Legado" },
+  { key: "Paje de Oros", name: "Paje de Oros", suit: "coins", color: "background: linear-gradient(to bottom right, #fbbf24, #f59e0b)", textColor: "text-slate-800", symbol: "🧒🟡", description: "Estudiante" },
+  { key: "Caballero de Oros", name: "Caballero de Oros", suit: "coins", color: "background: linear-gradient(to bottom right, #fbbf24, #f59e0b)", textColor: "text-slate-800", symbol: "🐎🟡", description: "Ambicioso" },
+  { key: "Reina de Oros", name: "Reina de Oros", suit: "coins", color: "background: linear-gradient(to bottom right, #fbbf24, #f59e0b)", textColor: "text-slate-800", symbol: "👸🟡", description: "Práctica" },
+  { key: "Rey de Oros", name: "Rey de Oros", suit: "coins", color: "background: linear-gradient(to bottom right, #fbbf24, #f59e0b)", textColor: "text-slate-800", symbol: "🤴🟡", description: "Éxito" },
 
   // PALO DE BASTOS (Verde)
-  { name: "As de Bastos", suit: "wands", color: "background: linear-gradient(to bottom right, #16a34a, #10b981)", symbol: "🌱", description: "Nuevo comienzo" },
-  { name: "Dos de Bastos", suit: "wands", color: "background: linear-gradient(to bottom right, #16a34a, #10b981)", symbol: "🌱", description: "Planificación" },
-  { name: "Tres de Bastos", suit: "wands", color: "background: linear-gradient(to bottom right, #16a34a, #10b981)", symbol: "🌱", description: "Expansión" },
-  { name: "Cuatro de Bastos", suit: "wands", color: "background: linear-gradient(to bottom right, #16a34a, #10b981)", symbol: "🌱", description: "Fundación" },
-  { name: "Cinco de Bastos", suit: "wands", color: "background: linear-gradient(to bottom right, #16a34a, #10b981)", symbol: "🌱", description: "Conflicto" },
-  { name: "Seis de Bastos", suit: "wands", color: "background: linear-gradient(to bottom right, #16a34a, #10b981)", symbol: "🌱", description: "Victoria" },
-  { name: "Siete de Bastos", suit: "wands", color: "background: linear-gradient(to bottom right, #16a34a, #10b981)", symbol: "🌱", description: "Defensa" },
-  { name: "Ocho de Bastos", suit: "wands", color: "background: linear-gradient(to bottom right, #16a34a, #10b981)", symbol: "🌱", description: "Rapidez" },
-  { name: "Nueve de Bastos", suit: "wands", color: "background: linear-gradient(to bottom right, #16a34a, #10b981)", symbol: "🌱", description: "Preparación" },
-  { name: "Diez de Bastos", suit: "wands", color: "background: linear-gradient(to bottom right, #16a34a, #10b981)", symbol: "🌱", description: "Carga" },
-  { name: "Paje de Bastos", suit: "wands", color: "background: linear-gradient(to bottom right, #16a34a, #10b981)", symbol: "🧒🌱", description: "Explorador" },
-  { name: "Caballero de Bastos", suit: "wands", color: "background: linear-gradient(to bottom right, #16a34a, #10b981)", symbol: "🐎🌱", description: "Aventurero" },
-  { name: "Reina de Bastos", suit: "wands", color: "background: linear-gradient(to bottom right, #16a34a, #10b981)", symbol: "👸🌱", description: "Independiente" },
-  { name: "Rey de Bastos", suit: "wands", color: "background: linear-gradient(to bottom right, #16a34a, #10b981)", symbol: "🤴🌱", description: "Líder" },
+  { key: "As de Bastos", name: "As de Bastos", suit: "wands", color: "background: linear-gradient(to bottom right, #16a34a, #10b981)", textColor: "text-slate-800", symbol: "🌱", description: "Nuevo comienzo" },
+  { key: "Dos de Bastos", name: "2", suit: "wands", color: "background: linear-gradient(to bottom right, #16a34a, #10b981)", textColor: "text-slate-800", symbol: "🌱", description: "Planificación" },
+  { key: "Tres de Bastos", name: "3", suit: "wands", color: "background: linear-gradient(to bottom right, #16a34a, #10b981)", textColor: "text-slate-800", symbol: "🌱", description: "Expansión" },
+  { key: "Cuatro de Bastos", name: "4", suit: "wands", color: "background: linear-gradient(to bottom right, #16a34a, #10b981)", textColor: "text-slate-800", symbol: "🌱", description: "Fundación" },
+  { key: "Cinco de Bastos", name: "5", suit: "wands", color: "background: linear-gradient(to bottom right, #16a34a, #10b981)", textColor: "text-slate-800", symbol: "🌱", description: "Conflicto" },
+  { key: "Seis de Bastos", name: "6", suit: "wands", color: "background: linear-gradient(to bottom right, #16a34a, #10b981)", textColor: "text-slate-800", symbol: "🌱", description: "Victoria" },
+  { key: "Siete de Bastos", name: "7", suit: "wands", color: "background: linear-gradient(to bottom right, #16a34a, #10b981)", textColor: "text-slate-800", symbol: "🌱", description: "Defensa" },
+  { key: "Ocho de Bastos", name: "8", suit: "wands", color: "background: linear-gradient(to bottom right, #16a34a, #10b981)", textColor: "text-slate-800", symbol: "🌱", description: "Rapidez" },
+  { key: "Nueve de Bastos", name: "9", suit: "wands", color: "background: linear-gradient(to bottom right, #16a34a, #10b981)", textColor: "text-slate-800", symbol: "🌱", description: "Preparación" },
+  { key: "Diez de Bastos", name: "10", suit: "wands", color: "background: linear-gradient(to bottom right, #16a34a, #10b981)", textColor: "text-slate-800", symbol: "🌱", description: "Carga" },
+  { key: "Paje de Bastos", name: "Paje de Bastos", suit: "wands", color: "background: linear-gradient(to bottom right, #16a34a, #10b981)", textColor: "text-slate-800", symbol: "🧒🌱", description: "Explorador" },
+  { key: "Caballero de Bastos", name: "Caballero de Bastos", suit: "wands", color: "background: linear-gradient(to bottom right, #16a34a, #10b981)", textColor: "text-slate-800", symbol: "🐎🌱", description: "Aventurero" },
+  { key: "Reina de Bastos", name: "Reina de Bastos", suit: "wands", color: "background: linear-gradient(to bottom right, #16a34a, #10b981)", textColor: "text-slate-800", symbol: "👸🌱", description: "Independiente" },
+  { key: "Rey de Bastos", name: "Rey de Bastos", suit: "wands", color: "background: linear-gradient(to bottom right, #16a34a, #10b981)", textColor: "text-slate-800", symbol: "🤴🌱", description: "Líder" },
 
   // PALO DE ESPADAS (Azul acero)
-  { name: "As de Espadas", suit: "swords", color: "background: linear-gradient(to bottom right, #475569, #2563eb)", symbol: "⚔️", description: "Claridad mental" },
-  { name: "Dos de Espadas", suit: "swords", color: "background: linear-gradient(to bottom right, #475569, #2563eb)", symbol: "⚔️", description: "Decisión" },
-  { name: "Tres de Espadas", suit: "swords", color: "background: linear-gradient(to bottom right, #475569, #2563eb)", symbol: "⚔️", description: "Dolor" },
-  { name: "Cuatro de Espadas", suit: "swords", color: "background: linear-gradient(to bottom right, #475569, #2563eb)", symbol: "⚔️", description: "Descanso" },
-  { name: "Cinco de Espadas", suit: "swords", color: "background: linear-gradient(to bottom right, #475569, #2563eb)", symbol: "⚔️", description: "Derrota" },
-  { name: "Seis de Espadas", suit: "swords", color: "background: linear-gradient(to bottom right, #475569, #2563eb)", symbol: "⚔️", description: "Transición" },
-  { name: "Siete de Espadas", suit: "swords", color: "background: linear-gradient(to bottom right, #475569, #2563eb)", symbol: "⚔️", description: "Engaño" },
-  { name: "Ocho de Espadas", suit: "swords", color: "background: linear-gradient(to bottom right, #475569, #2563eb)", symbol: "⚔️", description: "Atrapado" },
-  { name: "Nueve de Espadas", suit: "swords", color: "background: linear-gradient(to bottom right, #475569, #2563eb)", symbol: "⚔️", description: "Ansiedad" },
-  { name: "Diez de Espadas", suit: "swords", color: "background: linear-gradient(to bottom right, #475569, #2563eb)", symbol: "⚔️", description: "Final" },
-  { name: "Paje de Espadas", suit: "swords", color: "background: linear-gradient(to bottom right, #475569, #2563eb)", symbol: "🧒⚔️", description: "Mensajero" },
-  { name: "Caballero de Espadas", suit: "swords", color: "background: linear-gradient(to bottom right, #475569, #2563eb)", symbol: "🐎⚔️", description: "Acción" },
-  { name: "Reina de Espadas", suit: "swords", color: "background: linear-gradient(to bottom right, #475569, #2563eb)", symbol: "👸⚔️", description: "Intelecto" },
-  { name: "Rey de Espadas", suit: "swords", color: "background: linear-gradient(to bottom right, #475569, #2563eb)", symbol: "🤴⚔️", description: "Autoridad" },
+  { key: "As de Espadas", name: "As de Espadas", suit: "swords", color: "background: linear-gradient(to bottom right, #475569, #2563eb)", textColor: "text-white", symbol: "⚔️", description: "Claridad mental" },
+  { key: "Dos de Espadas", name: "2", suit: "swords", color: "background: linear-gradient(to bottom right, #475569, #2563eb)", textColor: "text-white", symbol: "⚔️", description: "Decisión" },
+  { key: "Tres de Espadas", name: "3", suit: "swords", color: "background: linear-gradient(to bottom right, #475569, #2563eb)", textColor: "text-white", symbol: "⚔️", description: "Dolor" },
+  { key: "Cuatro de Espadas", name: "4", suit: "swords", color: "background: linear-gradient(to bottom right, #475569, #2563eb)", textColor: "text-white", symbol: "⚔️", description: "Descanso" },
+  { key: "Cinco de Espadas", name: "5", suit: "swords", color: "background: linear-gradient(to bottom right, #475569, #2563eb)", textColor: "text-white", symbol: "⚔️", description: "Derrota" },
+  { key: "Seis de Espadas", name: "6", suit: "swords", color: "background: linear-gradient(to bottom right, #475569, #2563eb)", textColor: "text-white", symbol: "⚔️", description: "Transición" },
+  { key: "Siete de Espadas", name: "7", suit: "swords", color: "background: linear-gradient(to bottom right, #475569, #2563eb)", textColor: "text-white", symbol: "⚔️", description: "Engaño" },
+  { key: "Ocho de Espadas", name: "8", suit: "swords", color: "background: linear-gradient(to bottom right, #475569, #2563eb)", textColor: "text-white", symbol: "⚔️", description: "Atrapado" },
+  { key: "Nueve de Espadas", name: "9", suit: "swords", color: "background: linear-gradient(to bottom right, #475569, #2563eb)", textColor: "text-white", symbol: "⚔️", description: "Ansiedad" },
+  { key: "Diez de Espadas", name: "10", suit: "swords", color: "background: linear-gradient(to bottom right, #475569, #2563eb)", textColor: "text-white", symbol: "⚔️", description: "Final" },
+  { key: "Paje de Espadas", name: "Paje de Espadas", suit: "swords", color: "background: linear-gradient(to bottom right, #475569, #2563eb)", textColor: "text-white", symbol: "🧒⚔️", description: "Mensajero" },
+  { key: "Caballero de Espadas", name: "Caballero de Espadas", suit: "swords", color: "background: linear-gradient(to bottom right, #475569, #2563eb)", textColor: "text-white", symbol: "🐎⚔️", description: "Acción" },
+  { key: "Reina de Espadas", name: "Reina de Espadas", suit: "swords", color: "background: linear-gradient(to bottom right, #475569, #2563eb)", textColor: "text-white", symbol: "👸⚔️", description: "Intelecto" },
+  { key: "Rey de Espadas", name: "Rey de Espadas", suit: "swords", color: "background: linear-gradient(to bottom right, #475569, #2563eb)", textColor: "text-white", symbol: "🤴⚔️", description: "Autoridad" },
 
   // ARCANOS MAYORES (Colores únicos por carta)
-  { name: "El Loco", suit: "major", color: "background: linear-gradient(to bottom right, #fbbf24, #fb923c)", symbol: "🤪", description: "Inocencia" },
-  { name: "El Mago", suit: "major", color: "background: linear-gradient(to bottom right, #9333ea, #4f46e5)", symbol: "🔮", description: "Manifestación" },
-  { name: "La Sacerdotisa", suit: "major", color: "background: linear-gradient(to bottom right, #1e40af, #3730a3)", symbol: "🌙", description: "Intuición" },
-  { name: "La Emperatriz", suit: "major", color: "background: linear-gradient(to bottom right, #ec4899, #f43f5e)", symbol: "👸", description: "Fertilidad" },
-  { name: "El Emperador", suit: "major", color: "background: linear-gradient(to bottom right, #b91c1c, #be123c)", symbol: "👑", description: "Autoridad" },
-  { name: "El Hierofante", suit: "major", color: "background: linear-gradient(to bottom right, #7c3aed, #7c2d12)", symbol: "⛪", description: "Tradición" },
-  { name: "Los Enamorados", suit: "major", color: "background: linear-gradient(to bottom right, #f472b6, #f87171)", symbol: "💕", description: "Amor" },
-  { name: "El Carro", suit: "major", color: "background: linear-gradient(to bottom right, #2563eb, #0891b2)", symbol: "🏎️", description: "Victoria" },
-  { name: "La Fuerza", suit: "major", color: "background: linear-gradient(to bottom right, #f97316, #ef4444)", symbol: "🦁", description: "Coraje" },
-  { name: "El Ermitaño", suit: "major", color: "background: linear-gradient(to bottom right, #4b5563, #475569)", symbol: "🧙", description: "Sabiduría" },
-  { name: "La Rueda de la Fortuna", suit: "major", color: "background: linear-gradient(to bottom right, #eab308, #f97316)", symbol: "🎡", description: "Cambio" },
-  { name: "La Justicia", suit: "major", color: "background: linear-gradient(to bottom right, #22c55e, #10b981)", symbol: "⚖️", description: "Equilibrio" },
-  { name: "El Colgado", suit: "major", color: "background: linear-gradient(to bottom right, #3b82f6, #6366f1)", symbol: "🦅", description: "Sacrificio" },
-  { name: "La Muerte", suit: "major", color: "background: linear-gradient(to bottom right, #1f2937, #000000)", symbol: "💀", description: "Transformación" },
-  { name: "La Templanza", suit: "major", color: "background: linear-gradient(to bottom right, #60a5fa, #22d3ee)", symbol: "🍶", description: "Moderación" },
-  { name: "El Diablo", suit: "major", color: "background: linear-gradient(to bottom right, #991b1b, #000000)", symbol: "👹", description: "Tentación" },
-  { name: "La Torre", suit: "major", color: "background: linear-gradient(to bottom right, #ea580c, #dc2626)", symbol: "🗼", description: "Destrucción" },
-  { name: "La Estrella", suit: "major", color: "background: linear-gradient(to bottom right, #93c5fd, #67e8f9)", symbol: "⭐", description: "Esperanza" },
-  { name: "La Luna", suit: "major", color: "background: linear-gradient(to bottom right, #818cf8, #a78bfa)", symbol: "🌙", description: "Ilusión" },
-  { name: "El Sol", suit: "major", color: "background: linear-gradient(to bottom right, #fde047, #fdba74)", symbol: "☀️", description: "Alegría" },
-  { name: "El Juicio", suit: "major", color: "background: linear-gradient(to bottom right, #ffffff, #e5e7eb)", symbol: "👼", description: "Renacimiento" },
-  { name: "El Mundo", suit: "major", color: "background: linear-gradient(to bottom right, #4ade80, #34d399)", symbol: "🌍", description: "Completitud" }
+  { key: "El Loco", name: "El Loco", suit: "major", color: "background: linear-gradient(to bottom right, #fbbf24, #fb923c)", textColor: "text-white", symbol: "🤪", description: "Inocencia" },
+  { key: "El Mago", name: "El Mago", suit: "major", color: "background: linear-gradient(to bottom right, #9333ea, #4f46e5)", textColor: "text-white", symbol: "🔮", description: "Manifestación" },
+  { key: "La Sacerdotisa", name: "La Sacerdotisa", suit: "major", color: "background: linear-gradient(to bottom right, #1e40af, #3730a3)", textColor: "text-white", symbol: "🌙", description: "Intuición" },
+  { key: "La Emperatriz", name: "La Emperatriz", suit: "major", color: "background: linear-gradient(to bottom right, #ec4899, #f43f5e)", textColor: "text-white", symbol: "👸", description: "Fertilidad" },
+  { key: "El Emperador", name: "El Emperador", suit: "major", color: "background: linear-gradient(to bottom right, #b91c1c, #be123c)", textColor: "text-white", symbol: "👑", description: "Autoridad" },
+  { key: "El Hierofante", name: "El Hierofante", suit: "major", color: "background: linear-gradient(to bottom right, #7c3aed, #7c2d12)", textColor: "text-white", symbol: "⛪", description: "Tradición" },
+  { key: "Los Enamorados", name: "Los Enamorados", suit: "major", color: "background: linear-gradient(to bottom right, #f472b6, #f87171)", textColor: "text-white", symbol: "💕", description: "Amor" },
+  { key: "El Carro", name: "El Carro", suit: "major", color: "background: linear-gradient(to bottom right, #2563eb, #0891b2)", textColor: "text-white", symbol: "🏎️", description: "Victoria" },
+  { key: "La Fuerza", name: "La Fuerza", suit: "major", color: "background: linear-gradient(to bottom right, #f97316, #ef4444)", textColor: "text-white", symbol: "🦁", description: "Coraje" },
+  { key: "El Ermitaño", name: "El Ermitaño", suit: "major", color: "background: linear-gradient(to bottom right, #4b5563, #475569)", textColor: "text-white", symbol: "🧙", description: "Sabiduría" },
+  { key: "La Rueda de la Fortuna", name: "La Rueda de la Fortuna", suit: "major", color: "background: linear-gradient(to bottom right, #eab308, #f97316)", textColor: "text-white", symbol: "🎡", description: "Cambio" },
+  { key: "La Justicia", name: "La Justicia", suit: "major", color: "background: linear-gradient(to bottom right, #22c55e, #10b981)", textColor: "text-white", symbol: "⚖️", description: "Equilibrio" },
+  { key: "El Colgado", name: "El Colgado", suit: "major", color: "background: linear-gradient(to bottom right, #3b82f6, #6366f1)", textColor: "text-white", symbol: "🦅", description: "Sacrificio" },
+  { key: "La Muerte", name: "La Muerte", suit: "major", color: "background: linear-gradient(to bottom right, #1f2937, #000000)", textColor: "text-white", symbol: "💀", description: "Transformación" },
+  { key: "La Templanza", name: "La Templanza", suit: "major", color: "background: linear-gradient(to bottom right, #60a5fa, #22d3ee)", textColor: "text-slate-800", symbol: "🍶", description: "Moderación" },
+  { key: "El Diablo", name: "El Diablo", suit: "major", color: "background: linear-gradient(to bottom right, #991b1b, #000000)", textColor: "text-white", symbol: "👹", description: "Tentación" },
+  { key: "La Torre", name: "La Torre", suit: "major", color: "background: linear-gradient(to bottom right, #ea580c, #dc2626)", textColor: "text-white", symbol: "🗼", description: "Destrucción" },
+  { key: "La Estrella", name: "La Estrella", suit: "major", color: "background: linear-gradient(to bottom right, #93c5fd, #67e8f9)", textColor: "text-slate-800", symbol: "⭐", description: "Esperanza" },
+  { key: "La Luna", name: "La Luna", suit: "major", color: "background: linear-gradient(to bottom right, #818cf8, #a78bfa)", textColor: "text-white", symbol: "🌙", description: "Ilusión" },
+  { key: "El Sol", name: "El Sol", suit: "major", color: "background: linear-gradient(to bottom right, #fde047, #fdba74)", textColor: "text-slate-800", symbol: "☀️", description: "Alegría" },
+  { key: "El Juicio", name: "El Juicio", suit: "major", color: "background: linear-gradient(to bottom right, #ffffff, #e5e7eb)", textColor: "text-slate-800", symbol: "👼", description: "Renacimiento" },
+  { key: "El Mundo", name: "El Mundo", suit: "major", color: "background: linear-gradient(to bottom right, #4ade80, #34d399)", textColor: "text-white", symbol: "🌍", description: "Completitud" }
 ]
 
 // Función para obtener la configuración de una carta por nombre
 export function getTarotCardConfig(cardName: string): TarotCardConfig | undefined {
-  const config = TAROT_CARDS_CONFIG.find(card => card.name === cardName)
+  const config = TAROT_CARDS_CONFIG.find(card => card.key === cardName)
   if (!config) {
     console.warn(`⚠️ Carta no encontrada: "${cardName}"`)
-    console.log("Cartas disponibles:", TAROT_CARDS_CONFIG.map(card => card.name))
+    console.log("Cartas disponibles:", TAROT_CARDS_CONFIG.map(card => card.key))
   }
   return config
 }
@@ -117,6 +119,18 @@ export function getCardColor(cardName: string): string {
 export function getCardSymbol(cardName: string): string {
   const config = getTarotCardConfig(cardName)
   return config ? config.symbol : "✨" // Símbolo por defecto
+}
+
+// Función para obtener el color del texto de una carta
+export function getCardTextColor(cardName: string): string {
+  const config = getTarotCardConfig(cardName)
+  return config ? config.textColor : "text-white" // Color por defecto
+}
+
+// Función para obtener el nombre de display de una carta
+export function getCardDisplayName(cardName: string): string {
+  const config = getTarotCardConfig(cardName)
+  return config ? config.name : cardName // Si no se encuentra, devolver el nombre original
 }
 
 // Función para obtener la descripción de una carta

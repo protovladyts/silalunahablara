@@ -27,3 +27,24 @@
   font-style: italic;
   font-display: swap;
 }
+
+/* Fuente esotérica para las cartas de tarot */
+@import url('https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@0;1&display=swap');
+
+/* Clase CSS para aplicar la fuente esotérica a las cartas */
+.tarot-card-font {
+  font-family: 'IM Fell English', serif;
+  font-weight: normal;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+/* Clase específica para arcanos mayores con texto más pequeño */
+.tarot-card-font-major {
+  font-family: 'IM Fell English', serif;
+  font-weight: normal;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  font-size: 0.75em; /* Texto más pequeño para arcanos mayores */
+  line-height: 1.1; /* Ajustar el interlineado */
+}
