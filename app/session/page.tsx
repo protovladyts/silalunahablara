@@ -9,6 +9,7 @@ import { ReadingStream } from "@/components/reading-stream"
 import { Upsell } from "@/components/upsell"
 import { ProgressIndicator } from "@/components/progress-indicator"
 import { APP_CONFIG } from "@/lib/config"
+import { StarsBackground } from "@/components/stars-background"
 
 type SessionStep = "intake" | "reask" | "shuffle" | "draw" | "reading" | "upsell"
 
@@ -229,8 +230,9 @@ export default function SessionPage() {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-slate-900 to-purple-900 flex items-center justify-center p-4">
-        <div className="text-center">
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900/20 to-slate-900 relative overflow-hidden flex items-center justify-center p-4">
+        <StarsBackground animated={true} />
+        <div className="text-center relative z-10">
           <p className="text-red-400 mb-4">{error}</p>
           <button
             onClick={() => {
@@ -247,7 +249,9 @@ export default function SessionPage() {
   }
 
   return (
-    <div suppressHydrationWarning>
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900/20 to-slate-900 relative overflow-hidden" suppressHydrationWarning>
+      <StarsBackground animated={true} />
+      
       {step !== "upsell" && (
         <ProgressIndicator currentStep={getProgressStep()} loopsUsed={loopsUsed} maxLoops={MAX_LOOPS} />
       )}

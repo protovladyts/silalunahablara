@@ -1,11 +1,13 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
+import { StarsBackground } from "@/components/stars-background"
 
 export default function LegalPage() {
   return (
-    <div className="min-h-screen p-4">
-      <div className="max-w-2xl mx-auto space-y-6">
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900/20 to-slate-900 relative overflow-hidden p-4">
+      <StarsBackground animated={true} />
+      <div className="max-w-2xl mx-auto space-y-6 relative z-10">
         <Card className="bg-card border-border">
           <CardHeader>
             <CardTitle className="text-2xl text-card-foreground">Términos y Condiciones</CardTitle>

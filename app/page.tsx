@@ -4,6 +4,7 @@ import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { EmailForm } from "@/components/email-form"
 import { createUser, findUserByEmail } from "@/lib/mocks/mockDb"
+import { StarsBackground } from "@/components/stars-background"
 
 export default function HomePage() {
   const [isLoading, setIsLoading] = useState(false)
@@ -44,5 +45,10 @@ export default function HomePage() {
     }
   }
 
-  return <EmailForm onSubmit={handleEmailSubmit} isLoading={isLoading} />
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900/20 to-slate-900 relative overflow-hidden">
+      <StarsBackground animated={true} />
+      <EmailForm onSubmit={handleEmailSubmit} isLoading={isLoading} />
+    </div>
+  )
 }

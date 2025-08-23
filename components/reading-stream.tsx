@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { APP_CONFIG } from "@/lib/config"
 import { ClientOnly } from "./client-only"
+import { StarsBackground } from "./stars-background"
 
 interface ReadingStreamProps {
   reading: string
@@ -43,8 +44,12 @@ function ReadingStreamContent({ reading, loopsUsed, maxLoops = 3, onReask, onFin
   const repreguntasRestantes = maxLoops - loopsUsed - 1
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-slate-900 via-purple-900/20 to-slate-900">
-      <div className="absolute inset-0 opacity-30">
+    <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-slate-900 via-purple-900/20 to-slate-900 relative overflow-hidden">
+      {/* Estrellas animadas */}
+      <StarsBackground animated={true} />
+      
+      {/* Gradiente sutil de fondo */}
+      <div className="absolute inset-0 opacity-20">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_rgba(139,92,246,0.1)_0%,_transparent_70%)]" />
         <div
           className="absolute inset-0"
@@ -135,8 +140,12 @@ function ReadingStreamContent({ reading, loopsUsed, maxLoops = 3, onReask, onFin
 
 function ReadingStreamFallback({ reading }: ReadingStreamProps) {
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-slate-900 via-purple-900/20 to-slate-900">
-      <div className="absolute inset-0 opacity-30">
+    <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-slate-900 via-purple-900/20 to-slate-900 relative overflow-hidden">
+      {/* Estrellas estáticas para el fallback */}
+      <StarsBackground animated={false} />
+      
+      {/* Gradiente sutil de fondo */}
+      <div className="absolute inset-0 opacity-20">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_rgba(139,92,246,0.1)_0%,_transparent_70%)]" />
         <div
           className="absolute inset-0"
