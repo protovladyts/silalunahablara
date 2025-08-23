@@ -1,0 +1,32 @@
+name: Mirror to protovladyts
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  mirror:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout full history
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set git identity
+        run: |
+          git config user.name "mirror-bot"
+          git config user.email "mirror-bot@users.noreply.github.com"
+
+      - name: Add target remote
+        env:
+          TOKEN: ${{ secrets.TARGET_REPO_TOKEN_PROTOVLADYTS }}
+        run: |
+          git remote add target https://$TOKEN@github.com/protovladyts/silalunahablara.git
+          git fetch origin --tags
+
+      - name: Push main and tags (force mirror)
+        run: |
+          git push target main --force
+          git push target --tags --force
