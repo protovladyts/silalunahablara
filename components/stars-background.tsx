@@ -2,150 +2,122 @@
 
 import { motion } from "framer-motion"
 
+// Configuración de estrellas
+const STARS_CONFIG = {
+  // Tipo de estrellas
+  type: {
+    small: { size: 'w-1 h-1', count: 8 },
+    medium: { size: 'w-1.5 h-1.5', count: 4 },
+    bright: { size: 'w-2 h-2', count: 2 },
+    slow: { size: 'w-1 h-1', count: 3 }
+  },
+  // Densidad (cantidad de estrellas por área)
+  density: {
+    mobile: { multiplier: 1.0 },
+    desktop: { multiplier: 1.0 }
+  },
+  // Distribución (posiciones y colores)
+  distribution: {
+    colors: ['bg-white', 'bg-violet-300', 'bg-blue-300', 'bg-violet-200', 'bg-blue-200', 'bg-yellow-200', 'bg-yellow-100'],
+    positions: [
+      { top: '15%', left: '20%' }, { top: '25%', left: '80%' }, { top: '35%', left: '10%' },
+      { top: '45%', left: '90%' }, { top: '55%', left: '5%' }, { top: '65%', left: '85%' },
+      { top: '75%', left: '15%' }, { top: '85%', left: '75%' }, { top: '20%', left: '50%' },
+      { top: '40%', left: '30%' }, { top: '60%', left: '70%' }, { top: '80%', left: '40%' },
+      { top: '30%', left: '60%' }, { top: '70%', left: '25%' }, { top: '10%', left: '70%' },
+      { top: '50%', left: '95%' }, { top: '90%', left: '60%' }
+    ]
+  }
+}
+
 interface StarsBackgroundProps {
   animated?: boolean
   className?: string
 }
 
 export function StarsBackground({ animated = true, className = "" }: StarsBackgroundProps) {
+  // Detectar si es mobile
+  const isMobile = typeof window !== 'undefined' && window.innerWidth < 768
+
   if (animated) {
     return (
-      <div className={`absolute inset-0 ${className}`}>
+      <div className={`absolute inset-0 pointer-events-none ${className}`} style={{ zIndex: -1 }}>
         {/* Estrellas pequeñas */}
-        <motion.div 
-          className="absolute w-1 h-1 bg-white rounded-full opacity-60" 
-          style={{ top: '15%', left: '20%' }}
-          animate={{ opacity: [0.6, 0.3, 0.6] }}
-          transition={{ duration: 2, repeat: Infinity, delay: 0 }}
-        />
-        <motion.div 
-          className="absolute w-1 h-1 bg-violet-300 rounded-full opacity-50" 
-          style={{ top: '25%', left: '80%' }}
-          animate={{ opacity: [0.5, 0.2, 0.5] }}
-          transition={{ duration: 2, repeat: Infinity, delay: 1 }}
-        />
-        <motion.div 
-          className="absolute w-1 h-1 bg-blue-300 rounded-full opacity-40" 
-          style={{ top: '35%', left: '10%' }}
-          animate={{ opacity: [0.4, 0.1, 0.4] }}
-          transition={{ duration: 2, repeat: Infinity, delay: 2 }}
-        />
-        <motion.div 
-          className="absolute w-1 h-1 bg-white rounded-full opacity-70" 
-          style={{ top: '45%', left: '90%' }}
-          animate={{ opacity: [0.7, 0.4, 0.7] }}
-          transition={{ duration: 2, repeat: Infinity, delay: 0.5 }}
-        />
-        <motion.div 
-          className="absolute w-1 h-1 bg-violet-200 rounded-full opacity-60" 
-          style={{ top: '55%', left: '5%' }}
-          animate={{ opacity: [0.6, 0.3, 0.6] }}
-          transition={{ duration: 2, repeat: Infinity, delay: 1.5 }}
-        />
-        <motion.div 
-          className="absolute w-1 h-1 bg-white rounded-full opacity-50" 
-          style={{ top: '65%', left: '85%' }}
-          animate={{ opacity: [0.5, 0.2, 0.5] }}
-          transition={{ duration: 2, repeat: Infinity, delay: 2.5 }}
-        />
-        <motion.div 
-          className="absolute w-1 h-1 bg-blue-200 rounded-full opacity-40" 
-          style={{ top: '75%', left: '15%' }}
-          animate={{ opacity: [0.4, 0.1, 0.4] }}
-          transition={{ duration: 2, repeat: Infinity, delay: 0.8 }}
-        />
-        <motion.div 
-          className="absolute w-1 h-1 bg-violet-300 rounded-full opacity-60" 
-          style={{ top: '85%', left: '75%' }}
-          animate={{ opacity: [0.6, 0.3, 0.6] }}
-          transition={{ duration: 2, repeat: Infinity, delay: 1.2 }}
-        />
+        {Array.from({ length: Math.floor(STARS_CONFIG.type.small.count * STARS_CONFIG.density[isMobile ? 'mobile' : 'desktop'].multiplier) }).map((_, i) => (
+          <motion.div 
+            key={`small-${i}`}
+            className={`absolute ${STARS_CONFIG.type.small.size} ${STARS_CONFIG.distribution.colors[i % STARS_CONFIG.distribution.colors.length]} rounded-full opacity-60`}
+            style={STARS_CONFIG.distribution.positions[i % STARS_CONFIG.distribution.positions.length]}
+            animate={{ opacity: [0.6, 0.3, 0.6] }}
+            transition={{ duration: 2, repeat: Infinity, delay: i * 0.2 }}
+          />
+        ))}
         
         {/* Estrellas medianas */}
-        <motion.div 
-          className="absolute w-1.5 h-1.5 bg-white rounded-full opacity-80" 
-          style={{ top: '20%', left: '50%' }}
-          animate={{ opacity: [0.8, 0.5, 0.8] }}
-          transition={{ duration: 2, repeat: Infinity, delay: 0.3 }}
-        />
-        <motion.div 
-          className="absolute w-1.5 h-1.5 bg-violet-200 rounded-full opacity-70" 
-          style={{ top: '40%', left: '30%' }}
-          animate={{ opacity: [0.7, 0.4, 0.7] }}
-          transition={{ duration: 2, repeat: Infinity, delay: 1.8 }}
-        />
-        <motion.div 
-          className="absolute w-1.5 h-1.5 bg-blue-200 rounded-full opacity-60" 
-          style={{ top: '60%', left: '70%' }}
-          animate={{ opacity: [0.6, 0.3, 0.6] }}
-          transition={{ duration: 2, repeat: Infinity, delay: 0.7 }}
-        />
-        <motion.div 
-          className="absolute w-1.5 h-1.5 bg-white rounded-full opacity-75" 
-          style={{ top: '80%', left: '40%' }}
-          animate={{ opacity: [0.75, 0.45, 0.75] }}
-          transition={{ duration: 2, repeat: Infinity, delay: 1.4 }}
-        />
+        {Array.from({ length: Math.floor(STARS_CONFIG.type.medium.count * STARS_CONFIG.density[isMobile ? 'mobile' : 'desktop'].multiplier) }).map((_, i) => (
+          <motion.div 
+            key={`medium-${i}`}
+            className={`absolute ${STARS_CONFIG.type.medium.size} ${STARS_CONFIG.distribution.colors[(i + 2) % STARS_CONFIG.distribution.colors.length]} rounded-full opacity-70`}
+            style={STARS_CONFIG.distribution.positions[(i + 8) % STARS_CONFIG.distribution.positions.length]}
+            animate={{ opacity: [0.7, 0.4, 0.7] }}
+            transition={{ duration: 2, repeat: Infinity, delay: i * 0.3 }}
+          />
+        ))}
         
-        {/* Estrella brillante especial */}
-        <motion.div 
-          className="absolute w-2 h-2 bg-yellow-200 rounded-full opacity-90" 
-          style={{ top: '30%', left: '60%' }}
-          animate={{ opacity: [0.9, 0.6, 0.9] }}
-          transition={{ duration: 2, repeat: Infinity, delay: 0 }}
-        />
-        <motion.div 
-          className="absolute w-2 h-2 bg-yellow-100 rounded-full opacity-80" 
-          style={{ top: '70%', left: '25%' }}
-          animate={{ opacity: [0.8, 0.5, 0.8] }}
-          transition={{ duration: 2, repeat: Infinity, delay: 1.6 }}
-        />
+        {/* Estrellas brillantes especiales */}
+        {Array.from({ length: Math.floor(STARS_CONFIG.type.bright.count * STARS_CONFIG.density[isMobile ? 'mobile' : 'desktop'].multiplier) }).map((_, i) => (
+          <motion.div 
+            key={`bright-${i}`}
+            className={`absolute ${STARS_CONFIG.type.bright.size} ${STARS_CONFIG.distribution.colors[(i + 5) % STARS_CONFIG.distribution.colors.length]} rounded-full opacity-85`}
+            style={STARS_CONFIG.distribution.positions[(i + 12) % STARS_CONFIG.distribution.positions.length]}
+            animate={{ opacity: [0.85, 0.6, 0.85] }}
+            transition={{ duration: 2, repeat: Infinity, delay: i * 0.5 }}
+          />
+        ))}
         
         {/* Estrellas que parpadean más lentamente */}
-        <motion.div 
-          className="absolute w-1 h-1 bg-white rounded-full opacity-40" 
-          style={{ top: '10%', left: '70%' }}
-          animate={{ opacity: [0.4, 0.1, 0.4] }}
-          transition={{ duration: 3, repeat: Infinity, delay: 3 }}
-        />
-        <motion.div 
-          className="absolute w-1 h-1 bg-violet-300 rounded-full opacity-30" 
-          style={{ top: '50%', left: '95%' }}
-          animate={{ opacity: [0.3, 0.05, 0.3] }}
-          transition={{ duration: 3, repeat: Infinity, delay: 3.5 }}
-        />
-        <motion.div 
-          className="absolute w-1 h-1 bg-blue-300 rounded-full opacity-35" 
-          style={{ top: '90%', left: '60%' }}
-          animate={{ opacity: [0.35, 0.1, 0.35] }}
-          transition={{ duration: 3, repeat: Infinity, delay: 4 }}
-        />
+        {Array.from({ length: Math.floor(STARS_CONFIG.type.slow.count * STARS_CONFIG.density[isMobile ? 'mobile' : 'desktop'].multiplier) }).map((_, i) => (
+          <motion.div 
+            key={`slow-${i}`}
+            className={`absolute ${STARS_CONFIG.type.slow.size} ${STARS_CONFIG.distribution.colors[(i + 3) % STARS_CONFIG.distribution.colors.length]} rounded-full opacity-35`}
+            style={STARS_CONFIG.distribution.positions[(i + 14) % STARS_CONFIG.distribution.positions.length]}
+            animate={{ opacity: [0.35, 0.1, 0.35] }}
+            transition={{ duration: 3, repeat: Infinity, delay: 3 + i * 0.5 }}
+          />
+        ))}
       </div>
     )
   }
 
   // Estrellas estáticas
   return (
-    <div className={`absolute inset-0 ${className}`}>
+    <div className={`absolute inset-0 pointer-events-none ${className}`} style={{ zIndex: -1 }}>
       {/* Estrellas pequeñas */}
-      <div className="absolute w-1 h-1 bg-white rounded-full opacity-60" style={{ top: '15%', left: '20%' }} />
-      <div className="absolute w-1 h-1 bg-violet-300 rounded-full opacity-50" style={{ top: '25%', left: '80%' }} />
-      <div className="absolute w-1 h-1 bg-blue-300 rounded-full opacity-40" style={{ top: '35%', left: '10%' }} />
-      <div className="absolute w-1 h-1 bg-white rounded-full opacity-70" style={{ top: '45%', left: '90%' }} />
-      <div className="absolute w-1 h-1 bg-violet-200 rounded-full opacity-60" style={{ top: '55%', left: '5%' }} />
-      <div className="absolute w-1 h-1 bg-white rounded-full opacity-50" style={{ top: '65%', left: '85%' }} />
-      <div className="absolute w-1 h-1 bg-blue-200 rounded-full opacity-40" style={{ top: '75%', left: '15%' }} />
-      <div className="absolute w-1 h-1 bg-violet-300 rounded-full opacity-60" style={{ top: '85%', left: '75%' }} />
+      {Array.from({ length: Math.floor(STARS_CONFIG.type.small.count * STARS_CONFIG.density[isMobile ? 'mobile' : 'desktop'].multiplier) }).map((_, i) => (
+        <div 
+          key={`static-small-${i}`}
+          className={`absolute ${STARS_CONFIG.type.small.size} ${STARS_CONFIG.distribution.colors[i % STARS_CONFIG.distribution.colors.length]} rounded-full opacity-60`}
+          style={STARS_CONFIG.distribution.positions[i % STARS_CONFIG.distribution.positions.length]}
+        />
+      ))}
       
       {/* Estrellas medianas */}
-      <div className="absolute w-1.5 h-1.5 bg-white rounded-full opacity-80" style={{ top: '20%', left: '50%' }} />
-      <div className="absolute w-1.5 h-1.5 bg-violet-200 rounded-full opacity-70" style={{ top: '40%', left: '30%' }} />
-      <div className="absolute w-1.5 h-1.5 bg-blue-200 rounded-full opacity-60" style={{ top: '60%', left: '70%' }} />
-      <div className="absolute w-1.5 h-1.5 bg-white rounded-full opacity-75" style={{ top: '80%', left: '40%' }} />
+      {Array.from({ length: Math.floor(STARS_CONFIG.type.medium.count * STARS_CONFIG.density[isMobile ? 'mobile' : 'desktop'].multiplier) }).map((_, i) => (
+        <div 
+          key={`static-medium-${i}`}
+          className={`absolute ${STARS_CONFIG.type.medium.size} ${STARS_CONFIG.distribution.colors[(i + 2) % STARS_CONFIG.distribution.colors.length]} rounded-full opacity-70`}
+          style={STARS_CONFIG.distribution.positions[(i + 8) % STARS_CONFIG.distribution.positions.length]}
+        />
+      ))}
       
-      {/* Estrella brillante especial */}
-      <div className="absolute w-2 h-2 bg-yellow-200 rounded-full opacity-90" style={{ top: '30%', left: '60%' }} />
-      <div className="absolute w-2 h-2 bg-yellow-100 rounded-full opacity-80" style={{ top: '70%', left: '25%' }} />
+      {/* Estrellas brillantes especiales */}
+      {Array.from({ length: Math.floor(STARS_CONFIG.type.bright.count * STARS_CONFIG.density[isMobile ? 'mobile' : 'desktop'].multiplier) }).map((_, i) => (
+        <div 
+          key={`static-bright-${i}`}
+          className={`absolute ${STARS_CONFIG.type.bright.size} ${STARS_CONFIG.distribution.colors[(i + 5) % STARS_CONFIG.distribution.colors.length]} rounded-full opacity-85`}
+          style={STARS_CONFIG.distribution.positions[(i + 12) % STARS_CONFIG.distribution.positions.length]}
+        />
+      ))}
     </div>
   )
 }
