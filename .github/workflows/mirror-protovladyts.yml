@@ -9,10 +9,15 @@ jobs:
   mirror:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout full history
+      - name: Checkout full history (no creds)
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          persist-credentials: false   # <- clave
+
+      - name: Remove default GitHub token header
+        run: |
+          git config --global --unset-all http.https://github.com/.extraheader || true
 
       - name: Configure git identity
         run: |
@@ -21,11 +26,11 @@ jobs:
 
       - name: Add target remote (authenticated)
         env:
-          USERNAME: ${{ secrets.TARGET_USER_PROTOVLADYTS }}
-          TOKEN: ${{ secrets.TARGET_TOKEN_PROTOVLADYTS }}
+          USERNAME: ${{ secrets.TARGET_USER_PROTOVLADYTS }}      # protovladyts
+          TOKEN:    ${{ secrets.TARGET_REPO_TOKEN_PROTOVLADYTS }} # PAT fine-grained con write
         run: |
           git remote add target https://${USERNAME}:${TOKEN}@github.com/protovladyts/silalunahablara.git
-          git fetch origin --tags
+          git remote -v
 
       - name: Push main and tags (force mirror)
         run: |
