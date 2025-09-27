@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 
@@ -10,7 +10,7 @@ interface OrderStatus {
   updatedAt: string;
 }
 
-export default function TarotSuccessPage() {
+function TarotSuccessPageContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const preferenceId = searchParams.get('preference_id');
@@ -247,5 +247,13 @@ export default function TarotSuccessPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function TarotSuccessPage() {
+  return (
+    <Suspense fallback={<div>Cargando...</div>}>
+      <TarotSuccessPageContent />
+    </Suspense>
   );
 }
