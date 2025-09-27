@@ -1,9 +1,10 @@
 'use client';
 
 import { useSearchParams } from 'next/navigation';
+import { Suspense } from 'react';
 import Link from 'next/link';
 
-export default function TarotFailurePage() {
+function TarotFailurePageContent() {
   const searchParams = useSearchParams();
   const preferenceId = searchParams.get('preference_id');
 
@@ -57,5 +58,13 @@ export default function TarotFailurePage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function TarotFailurePage() {
+  return (
+    <Suspense fallback={<div>Cargando...</div>}>
+      <TarotFailurePageContent />
+    </Suspense>
   );
 }

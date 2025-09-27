@@ -30,7 +30,7 @@ export function useSpeechToText({
   const [isListening, setIsListening] = useState(false);
   const [transcript, setTranscript] = useState('');
   const [error, setError] = useState<string | null>(null);
-  const recognitionRef = useRef<SpeechRecognition | null>(null);
+  const recognitionRef = useRef<any>(null);
 
   // Verificar si el navegador soporta Speech Recognition
   const isSupported = typeof window !== 'undefined' && 
@@ -51,7 +51,7 @@ export function useSpeechToText({
 
     try {
       // Usar la API correcta según el navegador
-      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
       const recognition = new SpeechRecognition();
 
       recognition.continuous = continuous;
@@ -63,7 +63,7 @@ export function useSpeechToText({
         setIsListening(true);
       };
 
-      recognition.onresult = (event) => {
+      recognition.onresult = (event: any) => {
         let finalTranscript = '';
         let interimTranscript = '';
 
@@ -85,7 +85,7 @@ export function useSpeechToText({
         }
       };
 
-      recognition.onerror = (event) => {
+      recognition.onerror = (event: any) => {
         console.error('[SpeechToText] Error:', event.error);
         
         let errorMessage = 'Error en el reconocimiento de voz';

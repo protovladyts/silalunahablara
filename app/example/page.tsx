@@ -32,10 +32,8 @@ export default function ExamplePage() {
             
             <PayWithMercadoPagoButton
               orderId="ORDER-123"
-              title="Suscripción Premium"
-              amount={19999}
-              currencyId="ARS"
-              payerEmail="test_user_123456@testuser.com"
+              itemId="additional_readings"
+              userEmail="test_user_123456@testuser.com"
               onStarted={handlePaymentStarted}
               onError={handlePaymentError}
               className="w-full"
@@ -54,10 +52,8 @@ export default function ExamplePage() {
             
             <PayWithMercadoPagoButton
               orderId="ORDER-456"
-              title="Ebook Premium"
-              amount={5000}
-              quantity={1}
-              currencyId="ARS"
+              itemId="video_call"
+              userEmail="test_user_123456@testuser.com"
               onStarted={handlePaymentStarted}
               onError={handlePaymentError}
               className="w-full"

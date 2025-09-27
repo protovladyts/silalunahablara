@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 
 interface OrderStatus {
@@ -9,7 +9,7 @@ interface OrderStatus {
   updatedAt: string;
 }
 
-export default function SuccessPage() {
+function SuccessPageContent() {
   const searchParams = useSearchParams();
   const preferenceId = searchParams.get('preference_id');
   const [orderStatus, setOrderStatus] = useState<OrderStatus | null>(null);
@@ -128,5 +128,13 @@ export default function SuccessPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function SuccessPage() {
+  return (
+    <Suspense fallback={<div>Cargando...</div>}>
+      <SuccessPageContent />
+    </Suspense>
   );
 }

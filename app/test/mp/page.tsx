@@ -88,6 +88,7 @@ export default function TestMercadoPagoPage() {
             <PayWithMercadoPagoButton
               orderId={orderId}
               itemId={process.env.NEXT_PUBLIC_TAROT_PRODUCT_ID || 'tarot-reading'}
+              userEmail="test@example.com"
               onStarted={handlePaymentStarted}
               onError={handlePaymentError}
               className="w-full"

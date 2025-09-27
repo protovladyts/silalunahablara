@@ -81,7 +81,7 @@ export async function POST(request: NextRequest) {
       id: preference.id,
       init_point: preference.init_point,
       sandbox_init_point: preference.sandbox_init_point,
-      status: preference.status || 'unknown'
+      status: (preference as any).status || 'unknown'
     }, null, 2));
 
     // Crear registro de pago en estado pending

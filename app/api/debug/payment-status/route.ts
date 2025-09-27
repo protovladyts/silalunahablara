@@ -61,7 +61,7 @@ export async function GET(request: NextRequest) {
       })),
       orders: Object.entries(orders).map(([key, value]) => ({
         orderId: key,
-        ...value
+        ...(value as Record<string, any>)
       }))
     });
 

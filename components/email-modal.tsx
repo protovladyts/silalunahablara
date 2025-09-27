@@ -76,7 +76,7 @@ export function EmailModal({ isOpen, onClose, onSuccess }: EmailModalProps) {
   if (showUpsell) {
     return (
       <div className="fixed inset-0 z-50">
-        <Upsell userEmail={email} />
+        <Upsell userEmail={email} sessionCard={<div />} />
       </div>
     )
   }

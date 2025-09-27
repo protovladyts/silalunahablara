@@ -5,6 +5,7 @@ export const SHARED_CONFIG = {
   
   // Número de lecturas adicionales por pago
   PAID_READINGS: 1,
+  ADDITIONAL_READINGS_COUNT: 1,
   
   // Precio de la lectura adicional
   ADDITIONAL_READING_PRICE: 10000, // ARS
