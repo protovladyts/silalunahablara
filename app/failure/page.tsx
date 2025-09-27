@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 
 interface OrderStatus {
@@ -9,7 +9,7 @@ interface OrderStatus {
   updatedAt: string;
 }
 
-export default function FailurePage() {
+function FailurePageContent() {
   const searchParams = useSearchParams();
   const preferenceId = searchParams.get('preference_id');
   const [orderStatus, setOrderStatus] = useState<OrderStatus | null>(null);
@@ -134,5 +134,13 @@ export default function FailurePage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function FailurePage() {
+  return (
+    <Suspense fallback={<div>Cargando...</div>}>
+      <FailurePageContent />
+    </Suspense>
   );
 }
