@@ -44,7 +44,7 @@ export function TarotCard({
         initial={{ opacity: 0, scale: 0 }}
         animate={{ opacity: 0, scale: 0 }}
         transition={{ delay, duration: 0.5 }}
-        className="w-20 h-28 md:w-24 md:h-36"
+        className="w-24 h-36"
       />
     )
   }
@@ -70,7 +70,7 @@ export function TarotCard({
       style={{ transformStyle: "preserve-3d" }}
     >
       <motion.div
-        className="relative w-20 h-28 md:w-24 md:h-36 cursor-pointer"
+        className="relative w-24 h-36 cursor-pointer"
         animate={{
           rotateY: shouldShowFront ? 180 : 0,
           rotateZ: isReversed ? 180 : 0, // Rotar verticalmente si está invertida
@@ -125,8 +125,8 @@ export function TarotCard({
                         <div class="absolute inset-0 bg-[radial-gradient(circle_at_25%_25%,_rgba(139,92,246,0.3)_0%,_transparent_50%)]"></div>
                         <div class="absolute inset-0 bg-[radial-gradient(circle_at_75%_75%,_rgba(168,85,247,0.3)_0%,_transparent_50%)]"></div>
                       </div>
-                      <div class="text-3xl md:text-4xl mb-2 relative z-10">🌙</div>
-                      <div class="text-[8px] md:text-[10px] font-bold text-violet-200 text-center leading-tight relative z-10">
+                      <div class="text-4xl mb-2 relative z-10">🌙</div>
+                      <div class="text-[10px] font-bold text-violet-200 text-center leading-tight relative z-10">
                         SILA LUNA<br/>HABLARA
                       </div>
                     </div>
@@ -151,7 +151,6 @@ export function TarotCard({
                 src={cardImageUrl} 
                 alt={name} 
                 className="absolute inset-0 w-full h-full object-cover rounded"
-                style={{ transform: isReversed ? "rotate(180deg)" : "none" }}
                 onError={(e) => {
                   // Fallback a emoji si la imagen falla
                   const target = e.target as HTMLImageElement
@@ -159,8 +158,8 @@ export function TarotCard({
                   const parent = target.parentElement
                   if (parent) {
                     parent.innerHTML = `
-                      <div class="text-2xl md:text-3xl mb-2 transition-transform duration-300">${cardSymbol}</div>
-                      <p class="text-[10px] md:text-xs font-bold leading-tight mb-1 ${cardTextColor} ${fontClass}">${getCardDisplayName(name)}</p>
+                      <div class="text-3xl mb-2 transition-transform duration-300">${cardSymbol}</div>
+                      <p class="text-xs font-bold leading-tight mb-1 ${cardTextColor} ${fontClass}">${getCardDisplayName(name)}</p>
                     `
                   }
                 }}
@@ -169,12 +168,12 @@ export function TarotCard({
               /* Fallback a emoji y texto si no hay imagen */
               <>
                 {/* Card symbol único */}
-                <div className="text-2xl md:text-3xl mb-2 transition-transform duration-300">
+                <div className="text-3xl mb-2 transition-transform duration-300">
                   {cardSymbol}
                 </div>
 
                 {/* Card name */}
-                <p className={`text-[10px] md:text-xs font-bold leading-tight mb-1 ${cardTextColor} ${fontClass}`}>{getCardDisplayName(name)}</p>
+                <p className={`text-xs font-bold leading-tight mb-1 ${cardTextColor} ${fontClass}`}>{getCardDisplayName(name)}</p>
               </>
             )}
           </div>

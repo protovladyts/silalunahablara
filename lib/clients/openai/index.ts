@@ -37,7 +37,7 @@ export interface QuestionValidationResponse {
 
 export async function validateQuestion(request: QuestionValidationRequest): Promise<QuestionValidationResponse> {
   // En desarrollo, usar mock
-  if (process.env.NODE_ENV === "development") {
+  if (process.env.SKIP_OPEN_AI === "true") {
     return getMockQuestionValidation(request);
   }
 
@@ -165,7 +165,7 @@ export async function generateTarotReading(
   request: TarotReadingRequest
 ): Promise<TarotReadingResponse> {
   // En desarrollo, usar mock
-  if (process.env.NODE_ENV === "development") {
+  if (process.env.SKIP_OPEN_AI === "true") {
     return getMockTarotReading(request);
   }
 
