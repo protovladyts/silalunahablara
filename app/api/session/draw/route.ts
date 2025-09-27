@@ -103,7 +103,7 @@ export async function POST(request: NextRequest) {
 
     console.log(`[v0] Drawing cards for session: ${sessionId}`)
 
-    // Buscar sesión en la base de datos
+    // Buscar sesión en la base de datos con bloqueo optimista
     const session = await prisma.tarotSession.findUnique({
       where: { id: sessionId },
       include: { user: true }
@@ -151,16 +151,25 @@ export async function POST(request: NextRequest) {
 
     console.log(`[v0] Drawing ${drawnCards.length} cards`)
 
-    // Update session in database
-    const updatedSession = await prisma.tarotSession.update({
-      where: { id: sessionId },
-      data: {
-        status: "DRAWN",
-        drawnCards,
-      }
-    })
+    // Update session in database con manejo de concurrencia
+    try {
+      const updatedSession = await prisma.tarotSession.update({
+        where: { 
+          id: sessionId,
+          status: "SHUFFLED" // Solo actualizar si sigue en estado SHUFFLED
+        },
+        data: {
+          status: "DRAWN",
+          drawnCards,
+        }
+      })
 
-    console.log(`[v0] Session updated to drawn status`)
+      console.log(`[v0] Session updated to drawn status`)
+    } catch (updateError) {
+      console.error(`[v0] Error updating session (possibly already updated):`, updateError)
+      // Si falla la actualización, puede ser porque ya se actualizó por otra llamada concurrente
+      // En ese caso, devolver las cartas de todas formas
+    }
 
     return NextResponse.json({
       success: true,

@@ -4,6 +4,7 @@ import { useState, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { TarotCard } from "./tarot-card"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { ProgressIndicator } from "@/components/progress-indicator"
 
 interface TarotTableProps {
   cards: Array<{ name: string; upright: boolean }>
@@ -11,6 +12,7 @@ interface TarotTableProps {
   isShuffling?: boolean
   isDealingCards?: boolean
   onShuffleComplete?: () => void
+  currentStep?: "shuffle" | "draw"
 }
 
 export function TarotTable({ 
@@ -18,7 +20,8 @@ export function TarotTable({
   onAllRevealed, 
   isShuffling = false, 
   isDealingCards = false,
-  onShuffleComplete 
+  onShuffleComplete,
+  currentStep = "draw"
 }: TarotTableProps) {
   const [revealedCards, setRevealedCards] = useState<boolean[]>([false, false, false])
   const [canReveal, setCanReveal] = useState(false)
@@ -298,7 +301,9 @@ export function TarotTable({
         />
       </div>
 
-      <Card className="w-full max-w-md bg-slate-800/80 border-violet-400/30 backdrop-blur-sm relative z-10">
+      <div className="w-full max-w-md relative z-10">
+        <ProgressIndicator currentStep={currentStep} />
+        <Card className="bg-slate-800/80 border-violet-400/30 backdrop-blur-sm">
         <CardHeader className="text-center">
           <CardTitle className="text-xl text-violet-100">Tu tirada de cartas</CardTitle>
           <CardDescription className="text-violet-300">
@@ -322,14 +327,14 @@ export function TarotTable({
         </CardContent>
       </Card>
 
-             {allRevealed && !isGeneratingReading && (
+      {allRevealed && !isGeneratingReading && (
          <motion.div
            initial={{ opacity: 0, y: 20 }}
            animate={{ opacity: 1, y: 0 }}
            className="text-center relative z-10"
          >
            <motion.p 
-             className="text-violet-300 mb-4"
+             className="text-violet-300 mb-4 mt-4"
              animate={{ 
                scale: [1, 1.05, 1],
                opacity: [0.8, 1, 0.8]
@@ -357,7 +362,8 @@ export function TarotTable({
              </motion.span>
            </div>
          </motion.div>
-       )}
+      )}
+      </div>
     </div>
   )
 }

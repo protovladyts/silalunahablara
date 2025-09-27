@@ -208,3 +208,14 @@
     background: linear-gradient(to bottom right, #4ade80, #34d399);
   }
 }
+
+/* Instagram Stories Share Button - Mobile Only */
+.mobile-only {
+  display: none;
+}
+
+@media (hover: none) and (pointer: coarse) {
+  .mobile-only {
+    display: inline-flex;
+  }
+}

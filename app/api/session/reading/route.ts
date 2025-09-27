@@ -1,6 +1,6 @@
 import { type NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/db"
-import { generateTarotReading } from "@/lib/openai"
+import { generateTarotReading } from "@/lib/clients/openai"
 import { API_CONFIG } from "@/app/api/config"
 
 export async function POST(request: NextRequest) {
@@ -81,30 +81,12 @@ export async function POST(request: NextRequest) {
 
       console.log(`[v0] Session updated with AI reading`)
 
-      // Verificar si el usuario completó todas sus consultas gratuitas
-      const completedSessions = await prisma.tarotSession.count({
-        where: { 
-          userId: session.userId,
-          status: "READING"
-        }
+      // Marcar que el usuario ya usó su lectura gratuita
+      const updatedUser = await prisma.user.update({
+        where: { id: session.userId },
+        data: { hasFreeTarot: false }
       })
-
-      console.log(`[v0] DEBUGGING READING - User ${session.user?.email} completed sessions: ${completedSessions}`)
-      console.log(`[v0] DEBUGGING READING - MAX_TAROT_READINGS: ${API_CONFIG.MAX_TAROT_READINGS}`)
-      console.log(`[v0] DEBUGGING READING - Should update hasFreeTarot: ${completedSessions >= API_CONFIG.MAX_TAROT_READINGS}`)
-
-      if (completedSessions >= API_CONFIG.MAX_TAROT_READINGS) {
-        // Marcar que el usuario ya usó todas sus consultas gratuitas
-        // hasFreeTarot: false = No tiene más créditos gratuitos
-        const updatedUser = await prisma.user.update({
-          where: { id: session.userId },
-          data: { hasFreeTarot: false }
-        })
-        console.log(`[v0] User ${session.user?.email} has completed all free tarot readings, hasFreeTarot set to false`)
-        console.log(`[v0] DEBUGGING READING - User updated:`, { userId: updatedUser.id, hasFreeTarot: updatedUser.hasFreeTarot })
-      } else {
-        console.log(`[v0] DEBUGGING READING - User ${session.user?.email} still has free readings (${completedSessions}/${API_CONFIG.MAX_TAROT_READINGS})`)
-      }
+      console.log(`[v0] User ${session.user?.email} has completed their free tarot reading, hasFreeTarot set to false`)
 
       return NextResponse.json({
         success: true,
@@ -126,30 +108,12 @@ export async function POST(request: NextRequest) {
         }
       })
 
-      // Verificar si el usuario completó todas sus consultas gratuitas (fallback)
-      const completedSessions = await prisma.tarotSession.count({
-        where: { 
-          userId: session.userId,
-          status: "READING"
-        }
+      // Marcar que el usuario ya usó su lectura gratuita (fallback)
+      const updatedUser = await prisma.user.update({
+        where: { id: session.userId },
+        data: { hasFreeTarot: false }
       })
-
-      console.log(`[v0] DEBUGGING READING FALLBACK - User ${session.user?.email} completed sessions: ${completedSessions}`)
-      console.log(`[v0] DEBUGGING READING FALLBACK - MAX_TAROT_READINGS: ${API_CONFIG.MAX_TAROT_READINGS}`)
-      console.log(`[v0] DEBUGGING READING FALLBACK - Should update hasFreeTarot: ${completedSessions >= API_CONFIG.MAX_TAROT_READINGS}`)
-
-      if (completedSessions >= API_CONFIG.MAX_TAROT_READINGS) {
-        // Marcar que el usuario ya usó todas sus consultas gratuitas
-        // hasFreeTarot: false = No tiene más créditos gratuitos
-        const updatedUser = await prisma.user.update({
-          where: { id: session.userId },
-          data: { hasFreeTarot: false }
-        })
-        console.log(`[v0] User ${session.user?.email} has completed all free tarot readings (fallback), hasFreeTarot set to false`)
-        console.log(`[v0] DEBUGGING READING FALLBACK - User updated:`, { userId: updatedUser.id, hasFreeTarot: updatedUser.hasFreeTarot })
-      } else {
-        console.log(`[v0] DEBUGGING READING FALLBACK - User ${session.user?.email} still has free readings (${completedSessions}/${API_CONFIG.MAX_TAROT_READINGS})`)
-      }
+      console.log(`[v0] User ${session.user?.email} has completed their free tarot reading (fallback), hasFreeTarot set to false`)
 
       return NextResponse.json({
         success: true,

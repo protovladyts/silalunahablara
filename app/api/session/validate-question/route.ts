@@ -1,5 +1,5 @@
 import { type NextRequest, NextResponse } from "next/server"
-import { validateQuestion } from "@/lib/openai"
+import { validateQuestion } from "@/lib/clients/openai"
 
 export async function POST(request: NextRequest) {
   try {

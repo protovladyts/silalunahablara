@@ -10,24 +10,29 @@ import { ClientOnly } from "./client-only"
 import { StarsBackground } from "./stars-background"
 import { TarotCard } from "./tarot-card"
 import { getTarotReadingMessages } from "@/lib/tarot-utils"
+import { ProgressIndicator } from "@/components/progress-indicator"
+import { ShareReading } from "@/components/share-reading"
+import { InstagramStoryShareButton } from "@/app/components/InstagramStoryShareButton"
+import { TarotStoryButton } from "@/app/components/TarotStoryButton"
 
 interface ReadingStreamProps {
   reading: string
   question: string
-  loopsUsed: number
-  maxLoops?: number
+  hasUsedFreeReading: boolean
   cards?: Array<{ name: string; upright: boolean }>
   onReask: () => void
   onFinish: () => void
   onVideoCallOffer: () => void
   onUpsell: () => void
+  sessionCard: React.ReactNode
 }
 
-function ReadingStreamContent({ reading, question, loopsUsed, maxLoops = 3, cards = [], onReask, onFinish, onVideoCallOffer, onUpsell }: ReadingStreamProps) {
+function ReadingStreamContent({
+  reading, question, hasUsedFreeReading, cards = [], onReask, onFinish, onVideoCallOffer, onUpsell, sessionCard }: ReadingStreamProps) {
   const [displayedText, setDisplayedText] = useState("")
   const [isComplete, setIsComplete] = useState(false)
   const [showVideoOffer, setShowVideoOffer] = useState(false)
-  const messages = getTarotReadingMessages(loopsUsed)
+  const messages = getTarotReadingMessages(hasUsedFreeReading)
 
   useEffect(() => {
     let index = 0
@@ -66,6 +71,9 @@ function ReadingStreamContent({ reading, question, loopsUsed, maxLoops = 3, card
       </div>
 
       <div className="w-full max-w-4xl space-y-6 relative z-10">
+        <div className="w-full max-w-md mx-auto">
+          <ProgressIndicator currentStep="reading" />
+        </div>
         {/* Mostrar las cartas al principio */}
         {cards.length > 0 && (
           <motion.div
@@ -134,39 +142,25 @@ function ReadingStreamContent({ reading, question, loopsUsed, maxLoops = 3, card
               {isComplete && (
                 <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-4 mt-8">
                   <div className="text-center text-violet-300 text-sm">Lectura completada ✨</div>
-                  
-                  {/* Botones de compartir en redes sociales */}
-                  <motion.div 
-                    initial={{ opacity: 0, scale: 0.95 }} 
-                    animate={{ opacity: 1, scale: 1 }}
-                    className="bg-slate-700/50 border border-violet-400/30 rounded-lg p-4 text-center"
-                  >
-                    <div className="text-violet-200 text-sm mb-3">
-                      <p className="mb-1">✨ Compartí tu lectura</p>
-                      <p className="text-violet-300">Ayudá a otros a encontrar su camino</p>
-                    </div>
-                    <div className="flex gap-3 justify-center">
+                                              
+                  <div className="flex gap-3 justify-center">
+                    {canReask ? (
                       <Button
-                        onClick={() => console.log('Compartir en X')}
-                        className="bg-black hover:bg-gray-800 text-white font-semibold py-2 px-4"
+                        onClick={onReask}
+                        variant="outline"
+                        className="border-violet-400/30 text-violet-300 hover:bg-violet-400/10 bg-transparent"
                       >
-                        𝕏 X
+                        {messages.reaskButtonText}
                       </Button>
+                    ) : (
                       <Button
-                        onClick={() => console.log('Compartir en Instagram')}
-                        className="bg-gradient-to-r from-purple-600 via-pink-600 to-orange-500 hover:from-purple-700 hover:via-pink-700 hover:to-orange-600 text-white font-semibold py-2 px-4"
+                        onClick={onUpsell}
+                        className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white font-semibold"
                       >
-                        📸 Instagram
+                        💰 1 Pregunta más por $10.000 ARS
                       </Button>
-                      <Button
-                        onClick={() => console.log('Compartir en WhatsApp')}
-                        className="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4"
-                      >
-                        💬 WhatsApp
-                      </Button>
-                    </div>
-                  </motion.div>
-                  
+                    )}
+                  </div>      
                   {/* Oferta de videollamada */}
                   {showVideoOffer && (
                     <motion.div 
@@ -186,26 +180,8 @@ function ReadingStreamContent({ reading, question, loopsUsed, maxLoops = 3, card
                       </Button>
                     </motion.div>
                   )}
-                  
-                  <div className="flex gap-3 justify-center">
-                    {canReask ? (
-                      <Button
-                        onClick={onReask}
-                        variant="outline"
-                        className="border-violet-400/30 text-violet-300 hover:bg-violet-400/10 bg-transparent"
-                      >
-                        {messages.reaskButtonText}
-                      </Button>
-                    ) : (
-                      <Button
-                        onClick={onUpsell}
-                        className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white font-semibold"
-                      >
-                        💰 {APP_CONFIG.ADDITIONAL_READINGS_COUNT} Preguntas más por ${APP_CONFIG.ADDITIONAL_READINGS_PRICE} USD
-                      </Button>
-                    )}
-                  </div>
-                  
+
+
                   {/* Enlace a Términos y Condiciones */}
                   <div className="text-center pt-4">
                     <Link 
@@ -218,8 +194,10 @@ function ReadingStreamContent({ reading, question, loopsUsed, maxLoops = 3, card
                 </motion.div>
               )}
             </CardContent>
+            {sessionCard}
           </Card>
         </motion.div>
+        
       </div>
     </div>
   )
@@ -243,7 +221,11 @@ function ReadingStreamFallback({ reading, question }: ReadingStreamProps) {
         />
       </div>
 
-      <Card className="w-full max-w-2xl bg-slate-800/80 border-violet-400/30 backdrop-blur-sm relative z-10">
+      <div className="w-full max-w-4xl space-y-6 relative z-10">
+        <div className="w-full max-w-md mx-auto">
+          <ProgressIndicator currentStep="reading" />
+        </div>
+        <Card className="w-full max-w-2xl bg-slate-800/80 border-violet-400/30 backdrop-blur-sm relative z-10">
         <CardHeader className="text-center">
           <div className="text-4xl mb-2">✨</div>
           <CardTitle className="text-xl text-violet-100">Tu lectura de tarot</CardTitle>
@@ -259,6 +241,7 @@ function ReadingStreamFallback({ reading, question }: ReadingStreamProps) {
           </div>
         </CardContent>
       </Card>
+      </div>
     </div>
   )
 }

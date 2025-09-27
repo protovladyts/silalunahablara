@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import { motion } from "framer-motion"
-import { getCardColor, getCardSymbol, getCardTextColor, getCardDisplayName } from "@/lib/tarot-cards-config"
+import { getCardColor, getCardSymbol, getCardTextColor, getCardDisplayName, getCardImageUrl, hasCardImage } from "@/lib/tarot-cards-config"
 
 interface TarotCardProps {
   name: string
@@ -28,9 +28,14 @@ export function TarotCard({
   const cardSymbol = getCardSymbol(name)
   const cardTextColor = getCardTextColor(name)
   
+  // Obtener la URL de la imagen si está disponible
+  const cardImageUrl = getCardImageUrl(name)
+  const hasImage = hasCardImage(name)
+  
   // Determinar si es un arcano mayor para aplicar la fuente apropiada
   const isMajorArcana = name.includes("El ") || name.includes("La ") || name.includes("Los ")
   const fontClass = isMajorArcana ? "tarot-card-font-major" : "tarot-card-font"
+  
 
   // Si la carta está oculta, no renderizarla
   if (cardState === "hidden") {
@@ -102,63 +107,76 @@ export function TarotCard({
       >
         {/* Mostrar solo el lado correspondiente basado en si está revelada o no */}
         {!shouldShowFront ? (
-          /* Frente de la carta (con luna y "SILA LUNA HABLARA") */
-          <div className="absolute inset-0 bg-gradient-to-br from-violet-900 via-purple-800 to-indigo-900 border-2 border-violet-400/30 flex flex-col items-center justify-center overflow-hidden rounded-lg">
-            {/* Geometric pattern background */}
-            <div className="absolute inset-0 opacity-20">
-              <div className="absolute inset-0 bg-[radial-gradient(circle_at_25%_25%,_rgba(139,92,246,0.3)_0%,_transparent_50%)]" />
-              <div className="absolute inset-0 bg-[radial-gradient(circle_at_75%_75%,_rgba(168,85,247,0.3)_0%,_transparent_50%)]" />
-              <svg className="w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
-                <defs>
-                  <pattern id="geometric" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse">
-                    <polygon
-                      points="10,0 20,10 10,20 0,10"
-                      fill="rgba(139,92,246,0.1)"
-                      stroke="rgba(139,92,246,0.2)"
-                      strokeWidth="0.5"
-                    />
-                  </pattern>
-                </defs>
-                <rect width="100" height="100" fill="url(#geometric)" />
-              </svg>
-            </div>
-
-            {/* Central moon symbol */}
-            <div className="text-3xl md:text-4xl mb-2 relative z-10">🌙</div>
-
-            {/* Brand name */}
-            <div className="text-[8px] md:text-[10px] font-bold text-violet-200 text-center leading-tight relative z-10">
-              SILA LUNA
-              <br />
-              HABLARA
-            </div>
-
-            {/* Decorative elements */}
-            <div className="absolute top-2 left-2 w-2 h-2 border border-violet-400/50 rotate-45" />
-            <div className="absolute top-2 right-2 w-2 h-2 border border-violet-400/50 rotate-45" />
-            <div className="absolute bottom-2 left-2 w-2 h-2 border border-violet-400/50 rotate-45" />
-            <div className="absolute bottom-2 right-2 w-2 h-2 border border-violet-400/50 rotate-45" />
+          /* Dorso de la carta usando imagen dorso.png */
+          <div className="absolute inset-0 overflow-hidden rounded-lg">
+            <img 
+              src="/tarot-cards/dorso.png" 
+              alt="Dorso de carta de tarot" 
+              className="absolute inset-0 w-full h-full object-cover"
+              onError={(e) => {
+                // Fallback al diseño original si la imagen del dorso falla
+                const target = e.target as HTMLImageElement
+                target.style.display = 'none'
+                const parent = target.parentElement
+                if (parent) {
+                  parent.innerHTML = `
+                    <div class="absolute inset-0 bg-gradient-to-br from-violet-900 via-purple-800 to-indigo-900 flex flex-col items-center justify-center overflow-hidden rounded-lg">
+                      <div class="absolute inset-0 opacity-20">
+                        <div class="absolute inset-0 bg-[radial-gradient(circle_at_25%_25%,_rgba(139,92,246,0.3)_0%,_transparent_50%)]"></div>
+                        <div class="absolute inset-0 bg-[radial-gradient(circle_at_75%_75%,_rgba(168,85,247,0.3)_0%,_transparent_50%)]"></div>
+                      </div>
+                      <div class="text-3xl md:text-4xl mb-2 relative z-10">🌙</div>
+                      <div class="text-[8px] md:text-[10px] font-bold text-violet-200 text-center leading-tight relative z-10">
+                        SILA LUNA<br/>HABLARA
+                      </div>
+                    </div>
+                  `
+                }
+              }}
+            />
           </div>
         ) : (
           /* Reverso de la carta (con nombre y símbolo únicos) */
           <div 
-            className="absolute inset-0 border-2 border-violet-400/50 p-2 flex flex-col items-center justify-center text-center rounded-lg"
+            className="absolute inset-0 p-2 flex flex-col items-center justify-center text-center rounded-lg overflow-hidden"
             style={{
               transform: "rotateY(180deg)", // Compensar la rotación del contenedor padre
               transformOrigin: "center center",
               ...(cardColor.startsWith('background:') ? { background: cardColor.replace('background: ', '') } : {})
             }}
           >
-            {/* Card symbol único */}
-            <div className="text-2xl md:text-3xl mb-2 transition-transform duration-300">
-              {cardSymbol}
-            </div>
+            {hasImage && cardImageUrl ? (
+              /* Usar imagen de la carta si está disponible */
+              <img 
+                src={cardImageUrl} 
+                alt={name} 
+                className="absolute inset-0 w-full h-full object-cover rounded"
+                style={{ transform: isReversed ? "rotate(180deg)" : "none" }}
+                onError={(e) => {
+                  // Fallback a emoji si la imagen falla
+                  const target = e.target as HTMLImageElement
+                  target.style.display = 'none'
+                  const parent = target.parentElement
+                  if (parent) {
+                    parent.innerHTML = `
+                      <div class="text-2xl md:text-3xl mb-2 transition-transform duration-300">${cardSymbol}</div>
+                      <p class="text-[10px] md:text-xs font-bold leading-tight mb-1 ${cardTextColor} ${fontClass}">${getCardDisplayName(name)}</p>
+                    `
+                  }
+                }}
+              />
+            ) : (
+              /* Fallback a emoji y texto si no hay imagen */
+              <>
+                {/* Card symbol único */}
+                <div className="text-2xl md:text-3xl mb-2 transition-transform duration-300">
+                  {cardSymbol}
+                </div>
 
-            {/* Card name */}
-            <p className={`text-[10px] md:text-xs font-bold leading-tight mb-1 ${cardTextColor} ${fontClass}`}>{getCardDisplayName(name)}</p>
-
-            {/* Decorative border */}
-            <div className="absolute inset-1 border border-white/30 rounded pointer-events-none" />
+                {/* Card name */}
+                <p className={`text-[10px] md:text-xs font-bold leading-tight mb-1 ${cardTextColor} ${fontClass}`}>{getCardDisplayName(name)}</p>
+              </>
+            )}
           </div>
         )}
       </motion.div>

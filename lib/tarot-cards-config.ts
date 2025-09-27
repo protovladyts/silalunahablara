@@ -7,6 +7,7 @@ export interface TarotCardConfig {
   textColor: string
   symbol: string
   description: string
+  imageUrl?: string // URL de la imagen de la carta
 }
 
 export const TAROT_CARDS_CONFIG: TarotCardConfig[] = [
@@ -139,6 +140,54 @@ export function getCardDescription(cardName: string): string {
   return config ? config.description : "Carta de tarot" // Descripción por defecto
 }
 
+// Función para obtener la URL de la imagen de una carta
+export function getCardImageUrl(cardName: string): string | undefined {
+  const config = getTarotCardConfig(cardName)
+  if (config?.imageUrl) {
+    return config.imageUrl
+  }
+  
+  // Mapeo especial para nombres que no coinciden exactamente con los archivos
+  const specialMappings: { [key: string]: string } = {
+    "El Ermitaño": "elermitaño",
+  }
+  
+  // Verificar si hay un mapeo especial
+  if (specialMappings[cardName]) {
+    const fileName = specialMappings[cardName]
+    if (config?.suit === "major") {
+      return `/tarot-cards/major/${fileName}.png`
+    } else if (config?.suit) {
+      return `/tarot-cards/minor/${config.suit}/${fileName}.png`
+    }
+  }
+  
+  // Generar URL basada en el nombre de la carta si no está configurada
+  // Remover espacios y caracteres especiales para coincidir con los nombres de archivo
+  const fileName = cardName.toLowerCase()
+    .replace(/\s+/g, '') // Sin espacios ni guiones
+    .replace(/[áéíóú]/g, (match) => {
+      const accents: { [key: string]: string } = {
+        'á': 'a', 'é': 'e', 'í': 'i', 'ó': 'o', 'ú': 'u'
+      }
+      return accents[match]
+    })
+    .replace(/[^a-z0-9]/g, '')
+  
+  if (config?.suit === "major") {
+    return `/tarot-cards/major/${fileName}.png`
+  } else if (config?.suit) {
+    return `/tarot-cards/minor/${config.suit}/${fileName}.png`
+  }
+  
+  return undefined
+}
+
+// Función para verificar si una carta tiene imagen
+export function hasCardImage(cardName: string): boolean {
+  return getCardImageUrl(cardName) !== undefined
+}
+
 // Función de test para verificar que todas las cartas se encuentran correctamente
 export function testAllCards(): void {
   console.log("=== TESTING ALL TAROT CARDS ===")
@@ -155,15 +204,44 @@ export function testAllCards(): void {
   console.log(`Palo de Bastos: ${wands.length}/14 cartas`)
   console.log(`Palo de Espadas: ${swords.length}/14 cartas`)
   console.log(`Total: ${TAROT_CARDS_CONFIG.length}/78 cartas`)
+}
+
+// Función de test para verificar URLs de imágenes
+export function testImageUrls(): void {
+  console.log("=== TESTING IMAGE URLS ===")
   
-  // Test de búsqueda por nombre
-  const testCards = ["El Mago", "La Rueda de la Fortuna", "El Loco"]
+  const testCards = [
+    "El Loco", "El Mago", "La Sacerdotisa", "La Emperatriz", "El Emperador",
+    "El Ermitaño", "La Rueda de la Fortuna", "La Luna", "El Sol",
+    "As de Copas", "Dos de Copas", "Paje de Copas", "Reina de Copas",
+    "As de Oros", "Cinco de Oros", "Caballero de Oros",
+    "As de Bastos", "Tres de Bastos",
+    "As de Espadas", "Cinco de Espadas"
+  ]
+  
   testCards.forEach(name => {
+    const url = getCardImageUrl(name)
+    console.log(`"${name}" -> ${url}`)
+  })
+}
+
+// Función de test específica para las cartas problemáticas
+export function testProblematicCards(): void {
+  console.log("=== TESTING PROBLEMATIC CARDS ===")
+  
+  const problematicCards = [
+    "El Ermitaño",
+    "Paje de Copas", 
+    "Cinco de Oros"
+  ]
+  
+  problematicCards.forEach(name => {
     const config = getTarotCardConfig(name)
-    if (config) {
-      console.log(`✅ "${name}" encontrada: color="${config.color}", symbol="${config.symbol}"`)
-    } else {
-      console.log(`❌ "${name}" NO encontrada`)
-    }
+    const url = getCardImageUrl(name)
+    console.log(`"${name}":`)
+    console.log(`  - Config found: ${!!config}`)
+    console.log(`  - URL: ${url}`)
+    console.log(`  - Suit: ${config?.suit}`)
+    console.log("")
   })
 }

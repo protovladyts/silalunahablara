@@ -24,6 +24,7 @@ model User {
   // Relations
   tarotSessions TarotSession[]
   sessions      Session[]
+  tarotPayments TarotPayment[]
 
   @@map("users")
 }
@@ -79,4 +80,21 @@ enum TarotStatus {
   DRAWN
   READING
   COMPLETE
+}
+
+model TarotPayment {
+  id          String   @id @default(cuid())
+  orderId     String   @unique
+  userId      String
+  amount      Int      // Monto en centavos (ej: 10000 = $100.00 ARS)
+  currency    String   @default("ARS")
+  status      String   @default("pending") // pending, completed, failed, refunded
+  paymentType String   @default("additional_reading") // additional_reading, video_call
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("tarot_payments")
 }

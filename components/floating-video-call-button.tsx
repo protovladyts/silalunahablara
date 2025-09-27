@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button"
 import { APP_CONFIG } from "@/lib/config"
 
 interface FloatingVideoCallButtonProps {
-  currentStep?: "intake" | "reask" | "shuffle" | "draw" | "reading" | "upsell" | "verify" | "tyc" | "deck"
+  currentStep?: "home" | "intake" | "reask" | "shuffle" | "draw" | "reading" | "upsell" | "verify" | "tyc" | "deck"
 }
 
 export function FloatingVideoCallButton({ currentStep }: FloatingVideoCallButtonProps) {

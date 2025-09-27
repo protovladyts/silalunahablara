@@ -26,32 +26,31 @@ export async function POST(request: NextRequest) {
       user = await prisma.user.create({
         data: { 
           email,
-          hasFreeTarot: true // Usuarios nuevos tienen créditos gratuitos
+          hasFreeTarot: true // Usuarios nuevos tienen 1 lectura gratis
         }
       })
       console.log(`[v0] Created new user: ${user.id} with hasFreeTarot: true`)
     }
 
-    // Verificar si el usuario ya usó todas sus consultas gratuitas
-    // hasFreeTarot: false = No tiene créditos, hasFreeTarot: true = Sí tiene créditos
+    // Verificar si el usuario ya usó su lectura gratuita
     if (!user.hasFreeTarot) {
-      console.log(`[v0] User ${email} has already used their free tarot readings (hasFreeTarot: false)`)
+      console.log(`[v0] User ${email} has already used their free tarot reading (hasFreeTarot: false)`)
       return NextResponse.json({ 
-        error: "Ya has usado todas tus consultas gratuitas de tarot",
-        maxReadings: API_CONFIG.MAX_TAROT_READINGS,
-        hasFreeTarot: false
-      }, { status: 403 })
+        error: "Ya has usado tu lectura gratuita de tarot",
+        hasFreeTarot: false,
+        options: {
+          additionalReading: {
+            price: API_CONFIG.ADDITIONAL_READING_PRICE,
+            description: "1 lectura adicional por $" + API_CONFIG.ADDITIONAL_READING_PRICE + " USD"
+          },
+          videoCall: {
+            price: API_CONFIG.VIDEO_CALL_PRICE,
+            duration: API_CONFIG.VIDEO_CALL_DURATION,
+            description: "Lectura personalizada por videollamada"
+          }
+        }
+      }, { status: 402 }) // 402 Payment Required
     }
-
-    // Contar sesiones existentes para determinar loopsUsed
-    const existingSessions = await prisma.tarotSession.count({
-      where: { 
-        userId: user.id,
-        status: "READING" // Solo contar sesiones completadas
-      }
-    })
-
-    console.log(`[v0] User ${email} has ${existingSessions}/${API_CONFIG.MAX_TAROT_READINGS} completed sessions`)
 
     // Crear sesión de tarot
     const session = await prisma.tarotSession.create({

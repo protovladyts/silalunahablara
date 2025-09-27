@@ -1,13 +1,13 @@
 // Configuración compartida entre frontend y backend
 export const SHARED_CONFIG = {
-  // Número total de preguntas permitidas (1 inicial + repreguntas)
-  MAX_TAROT_READINGS: 3,
+  // Número de lecturas gratuitas permitidas
+  FREE_READINGS: 1,
   
-  // Precio del paquete de preguntas adicionales
-  ADDITIONAL_READINGS_PRICE: 1, // USD
+  // Número de lecturas adicionales por pago
+  PAID_READINGS: 1,
   
-  // Número de preguntas en el paquete adicional
-  ADDITIONAL_READINGS_COUNT: 3,
+  // Precio de la lectura adicional
+  ADDITIONAL_READING_PRICE: 10000, // ARS
   
   // Precio de la videollamada
   VIDEO_CALL_PRICE: 15, // USD

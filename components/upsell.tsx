@@ -6,53 +6,37 @@ import Link from "next/link"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { APP_CONFIG } from "@/lib/config"
+import PayWithMercadoPagoButton from "@/components/PayWithMercadoPagoButton"
+import { useSession } from "@/lib/hooks/useSession"
 
 interface UpsellProps {
   userEmail: string
+  sessionCard: React.ReactNode
 }
 
-export function Upsell({ userEmail }: UpsellProps) {
+export function Upsell({ userEmail, sessionCard }: UpsellProps) {
   const [isProcessing, setIsProcessing] = useState(false)
   const [message, setMessage] = useState("")
   const router = useRouter()
+  const { updateSession } = useSession()
 
-  const handlePurchase = async () => {
-    setIsProcessing(true)
-    setMessage("")
+  const handlePaymentStarted = (preferenceId: string) => {
+    console.log('Payment started with preference ID:', preferenceId)
+    setMessage("Redirigiendo a Mercado Pago...")
+  }
 
-    try {
-      const response = await fetch("/api/user/reset-credits", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ 
-          email: userEmail, 
-          paymentType: "additional_readings" 
-        }),
-      })
+  const handlePaymentError = (error: Error) => {
+    console.error('Payment error:', error)
+    setMessage("Error al procesar el pago: " + error.message)
+  }
 
-      if (!response.ok) {
-        const error = await response.json()
-        throw new Error(error.message || "Error procesando pago")
-      }
-
-      const { message: successMessage } = await response.json()
-      setMessage(successMessage)
-      
-      // Limpiar localStorage y redirigir a la página de sesión para hacer nueva pregunta
-      setTimeout(() => {
-        localStorage.setItem("userEmail", userEmail) // Mantener el email
-        localStorage.setItem("userName", "Usuario") // Nombre genérico
-        router.push("/session")
-      }, 2000)
-
-    } catch (error) {
-      console.error("Error processing purchase:", error)
-      setMessage("Error procesando pago. Intentá de nuevo.")
-    } finally {
-      setIsProcessing(false)
-    }
+  const handlePaymentSuccess = () => {
+    setMessage("¡Pago exitoso! Redirigiendo...")
+    // Actualizar la sesión para dar créditos al usuario
+    updateSession({ hasFreeTarot: true })
+    setTimeout(() => {
+      router.push("/session")
+    }, 2000)
   }
 
   const handleVideoCall = async () => {
@@ -112,14 +96,14 @@ export function Upsell({ userEmail }: UpsellProps) {
           <div className="text-4xl mb-4">💎</div>
           <CardTitle className="text-xl text-violet-100">¡Ups! Te quedaste sin lecturas gratis</CardTitle>
           <CardDescription className="text-violet-300">
-            Pero no te preocupes, podés hacer {APP_CONFIG.ADDITIONAL_READINGS_COUNT} lecturas más por solo ${APP_CONFIG.ADDITIONAL_READINGS_PRICE} USD
+            Pero no te preocupes, podés hacer 1 lectura más por solo $10.000 ARS
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="text-center text-violet-200 text-sm">
-            <p className="mb-2">🔮 3 lecturas adicionales</p>
+            <p className="mb-2">🔮 1 lectura adicional</p>
             <p className="mb-2">✨ Mismo nivel de calidad</p>
-            <p className="mb-2">💎 Precio especial: $1 USD</p>
+            <p className="mb-2">💎 Precio especial: $10.000 ARS</p>
             <p className="text-violet-300 font-semibold">¡Aprovechá esta oferta!</p>
           </div>
           
@@ -134,13 +118,16 @@ export function Upsell({ userEmail }: UpsellProps) {
           )}
 
           <div className="flex flex-col space-y-3">
-            <Button 
-              onClick={handlePurchase}
-              disabled={isProcessing}
-              className="w-full bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white font-semibold py-3 disabled:opacity-50 disabled:cursor-not-allowed"
+            <PayWithMercadoPagoButton
+              orderId={`tarot-reading-${userEmail}-${Date.now()}`}
+              itemId={process.env.NEXT_PUBLIC_TAROT_PRODUCT_ID || 'tarot-reading'}
+              userEmail={userEmail}
+              onStarted={handlePaymentStarted}
+              onError={handlePaymentError}
+              className="w-full bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white font-semibold py-3"
             >
-              {isProcessing ? "⏳ Procesando..." : `💰 Comprar ${APP_CONFIG.ADDITIONAL_READINGS_COUNT} Lecturas por $${APP_CONFIG.ADDITIONAL_READINGS_PRICE} USD`}
-            </Button>
+              💰 Comprar 1 Lectura de Tarot
+            </PayWithMercadoPagoButton>
             
             <Button 
               onClick={handleVideoCall}
@@ -166,6 +153,7 @@ export function Upsell({ userEmail }: UpsellProps) {
             </div>
           </div>
         </CardContent>
+        {sessionCard}
       </Card>
     </div>
   )

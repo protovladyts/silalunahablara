@@ -1,75 +1,95 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
-import { EmailForm } from "@/components/email-form"
+import { IntakeForm } from "@/components/intake-form"
+import { EmailModal } from "@/components/email-modal"
+import { OTPModal } from "@/components/otp-modal"
+import { SessionCard } from "@/components/session-card"
 import { StarsBackground } from "@/components/stars-background"
-import { Upsell } from "@/components/upsell"
 import { FloatingVideoCallButton } from "@/components/floating-video-call-button"
+import { useSession } from "@/lib/hooks/useSession"
 
 export default function HomePage() {
-  const [isLoading, setIsLoading] = useState(false)
-  const [showPaywall, setShowPaywall] = useState(false)
+  const [showEmailModal, setShowEmailModal] = useState(false)
+  const [showOTPModal, setShowOTPModal] = useState(false)
   const [userEmail, setUserEmail] = useState("")
-  const [paywallOptions, setPaywallOptions] = useState<any>(null)
+  const [pendingQuestion, setPendingQuestion] = useState("")
   const router = useRouter()
+  const { sessionData, isLoading, createSession, isSessionValid } = useSession()
 
-  const handleEmailSubmit = async (data: { email: string; name: string }) => {
-    setIsLoading(true)
+  // Si hay una sesión válida, redirigir directamente a la sesión
+  useEffect(() => {
+    if (!isLoading && isSessionValid()) {
+      router.push("/session")
+    }
+  }, [isLoading, isSessionValid, router])
 
-    try {
-      const response = await fetch("/api/otp/request", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email: data.email, name: data.name }),
-      })
+  // Cargar pregunta pendiente al montar el componente
+  useEffect(() => {
+    const savedQuestion = localStorage.getItem("pendingQuestion")
+    if (savedQuestion) {
+      setPendingQuestion(savedQuestion)
+    }
+  }, [])
 
-      if (!response.ok) {
-        const errorData = await response.json()
-        
-        // Si no tiene créditos gratuitos, mostrar paywall
-        if (errorData.error === "NO_FREE_CREDITS") {
-          setUserEmail(data.email)
-          setPaywallOptions(errorData.options)
-          setShowPaywall(true)
-          return
-        }
-        
-        throw new Error(errorData.message || "Error enviando código")
-      }
-
-      localStorage.setItem("userEmail", data.email)
-      localStorage.setItem("userName", data.name)
-
-      // Navigate to verification
-      router.push("/verify")
-    } catch (error) {
-      console.error("Error sending OTP:", error)
-      alert("Error enviando código. Intentá de nuevo.")
-    } finally {
-      setIsLoading(false)
+  const handleQuestionSubmit = (question: string) => {
+    // Guardar la pregunta en localStorage
+    localStorage.setItem("pendingQuestion", question.trim())
+    
+    // Solo mostrar modal de email si no hay sesión válida
+    if (!isSessionValid()) {
+      setShowEmailModal(true)
+    } else {
+      // Si hay sesión válida, redirigir directamente a la sesión
+      router.push("/session")
     }
   }
 
-  // Si no tiene créditos, mostrar paywall
-  if (showPaywall) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900/20 to-slate-900 relative overflow-hidden">
-        <StarsBackground animated={true} />
-        <Upsell userEmail={userEmail} />
-        <FloatingVideoCallButton currentStep="upsell" />
-      </div>
-    )
+  const handleEmailSuccess = (email: string) => {
+    setUserEmail(email)
+    setShowEmailModal(false)
+    setShowOTPModal(true)
   }
 
-              return (
-              <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900/20 to-slate-900 relative overflow-hidden">
-                <StarsBackground animated={true} />
-                <EmailForm onSubmit={handleEmailSubmit} isLoading={isLoading} />
-                <FloatingVideoCallButton currentStep="intake" />
-              </div>
-            )
+  const handleOTPSuccess = (email: string, name?: string) => {
+    // Crear sesión después del OTP exitoso
+    createSession(email, name, true)
+    setShowOTPModal(false)
+    // Limpiar pregunta pendiente ya que se va a procesar
+    localStorage.removeItem("pendingQuestion")
+    setPendingQuestion("")
+    // Redirigir a la sesión
+    router.push("/session")
+  }
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900/20 to-slate-900 relative overflow-hidden">
+      <StarsBackground animated={true} />
+      
+      <IntakeForm
+        onSubmit={handleQuestionSubmit}
+        isLoading={false}
+        initialQuestion={pendingQuestion}
+        sessionCard={sessionData && isSessionValid() ? <SessionCard /> : null}
+      />
+      
+      <FloatingVideoCallButton currentStep="home" />
+
+      {/* Modales */}
+      <EmailModal 
+        isOpen={showEmailModal}
+        onClose={() => setShowEmailModal(false)}
+        onSuccess={handleEmailSuccess}
+      />
+      
+      <OTPModal 
+        isOpen={showOTPModal}
+        onClose={() => setShowOTPModal(false)}
+        onSuccess={handleOTPSuccess}
+        email={userEmail}
+      />
+    </div>
+  )
 }

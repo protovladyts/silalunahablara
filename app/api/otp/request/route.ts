@@ -1,5 +1,6 @@
 import { type NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/db"
+import { sendOtpEmail } from "@/lib/clients/resend"
 
 export async function POST(request: NextRequest) {
   try {
@@ -79,11 +80,40 @@ export async function POST(request: NextRequest) {
 
     console.log(`[v0] User ${email} has free credits (hasFreeTarot: true), proceeding with OTP`)
 
-    // Generar código OTP (mock por ahora)
-    const otpCode = "123456"
+    // Verificar si es un dominio de prueba
+    const testDomain = process.env.OTP_TEST_DOMAIN
+    const emailDomain = email.split('@')[1]?.toLowerCase()
+    const isTestDomain = testDomain && emailDomain === testDomain.toLowerCase()
+
+    if (isTestDomain) {
+      console.log(`[v0] Test domain detected (${testDomain}), skipping email send for: ${email}`)
+      
+      // Para dominios de prueba, usar código fijo
+      const otpCode = "123456"
+      const expiresAt = new Date(Date.now() + 10 * 60 * 1000) // 10 minutos
+
+      // Guardar OTP en la base de datos
+      console.log("[v0] Creating OTP entry for test domain...")
+      const otpEntry = await prisma.otpEntry.create({
+        data: {
+          email: email.trim(),
+          code: otpCode,
+          expiresAt
+        }
+      })
+      console.log("[v0] OTP entry created for test domain:", { otpId: otpEntry.id, email: otpEntry.email })
+
+      return NextResponse.json({
+        success: true,
+        message: "Código enviado (modo prueba)",
+      })
+    }
+
+    // Para dominios normales, generar código OTP y enviar por Resend
+    const otpCode = Math.floor(100000 + Math.random() * 900000).toString() // Código de 6 dígitos
     const expiresAt = new Date(Date.now() + 10 * 60 * 1000) // 10 minutos
 
-    // Guardar OTP en la base de datos
+    // Guardar OTP en la base de datos primero
     console.log("[v0] Creating OTP entry...")
     const otpEntry = await prisma.otpEntry.create({
       data: {
@@ -93,6 +123,25 @@ export async function POST(request: NextRequest) {
       }
     })
     console.log("[v0] OTP entry created:", { otpId: otpEntry.id, email: otpEntry.email })
+
+    // Enviar email por Resend
+    try {
+      console.log(`[v0] Sending OTP ${otpCode} to ${email} via Resend`)
+      await sendOtpEmail({
+        email: email.trim(),
+        name: name.trim(),
+        otpCode
+      })
+      console.log(`[v0] Email sent successfully to: ${email}`)
+    } catch (emailError) {
+      console.error(`[v0] Failed to send email to ${email}:`, emailError)
+      // No fallar la operación si el email falla, el usuario puede solicitar reenvío
+      return NextResponse.json({
+        success: false,
+        error: "Error enviando el código. Probá de nuevo.",
+        details: process.env.NODE_ENV === 'development' ? emailError instanceof Error ? emailError.message : 'Email send failed' : undefined
+      }, { status: 500 })
+    }
 
     console.log(`[v0] OTP request completed successfully for: ${email}`)
 
